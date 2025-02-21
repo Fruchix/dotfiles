@@ -45,7 +45,6 @@ sbatch_utils::print::omp_config() {
     printf "%-25s %s\n" "OMP Places:" "$OMP_PLACES"
     printf "%-25s %s\n" "OMP Proc Bind:" "$OMP_PROC_BIND"
     printf "%-25s %s\n" "OMP Num Threads:" "$OMP_NUM_THREADS"
-    echo "------------------------------------------------------------------"
 }
 
 sbatch_utils::print::module_list() {
@@ -53,7 +52,6 @@ sbatch_utils::print::module_list() {
     echo "loaded modules:"
     echo "------------------------------------------------------------------"
     module list
-    echo "------------------------------------------------------------------"
 }
 
 sbatch_utils::end() {
