@@ -47,6 +47,10 @@ SLURM_FLAGS=(
     # --ntasks-per-socket=16              # mpi task limit per socket
 )
 
+### print run information ###
+sbatch_utils::print::module_list
+# sbatch_utils::print::omp_config
+
 # print env variables
 echo "------------------------------------------------------------------"
 echo "ENV VARIABLES"
