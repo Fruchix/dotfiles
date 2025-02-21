@@ -48,6 +48,14 @@ sbatch_utils::print::omp_config() {
     echo "------------------------------------------------------------------"
 }
 
+sbatch_utils::print::module_list() {
+    echo "------------------------------------------------------------------"
+    echo "loaded modules:"
+    echo "------------------------------------------------------------------"
+    module list
+    echo "------------------------------------------------------------------"
+}
+
 sbatch_utils::end() {
     echo -e "\n--------------------------  END  ---------------------------------"
     echo "End of $SLURM_JOB_NAME ($SLURM_JOB_ID) the $(date)"
@@ -60,3 +68,4 @@ sbatch_utils::create_and_cd_run_dir() {
     mkdir "${name}.${SLURM_JOBID}_${SLURM_NNODES}nodes"
     cd "${name}.${SLURM_JOBID}_${SLURM_NNODES}nodes"
 }
+
