@@ -1,0 +1,62 @@
+#######################################
+# GENERAL
+#######################################
+# Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
+set input-meta on
+set output-meta on
+set convert-meta off
+
+
+#######################################
+# COMPLETION
+#######################################
+set completion-ignore-case on
+set show-all-if-unmodified on
+set show-all-if-ambiguous on
+
+# Display the common prefix before cycling through the list.
+# So we are not forced to choose one match.
+set menu-complete-display-prefix on
+
+# Only one match per line
+set completion-display-width 0
+
+# Highlight the common prefix
+set colored-completion-prefix on
+
+# Show extra file information when completing, like `ls -F` does
+# set visible-stats on
+# commented to remove the trailing slash when completing dir names
+
+# Remove the trailing slash when completing dir names
+set mark-directories off
+set visible-stats off
+
+# Color matches according to match type
+set colored-stats on
+
+# Be more intelligent when autocompleting by also looking at the text after
+# the cursor. For example, when the current line is "cd ~/src/mozil", and
+# the cursor is on the "z", pressing Tab will not autocomplete it to "cd
+# ~/src/mozillail", but to "cd ~/src/mozilla". (This is supported by the
+# Readline used by Bash 4.)
+set skip-completed-text on
+
+# TAB to cycle through completions
+"\t": menu-complete
+
+# SHIFT+TAB to cycle through completions in reverse
+"\e[Z": menu-complete-backward
+
+
+#######################################
+# KEY MAPPINGS
+#######################################
+# Mappings for Ctrl-left-arrow and Ctrl-right-arrow for moving through words
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+"\e[5C": forward-word
+"\e[5D": backward-word
+"\e\e[C": forward-word
+"\e\e[D": backward-word
+
