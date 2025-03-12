@@ -95,17 +95,19 @@ alias CACA='ls -tp | grep -v / | head -1 | xargs tail -f -v -n +1'
 
 # alias l='ls -lahF --color=auto' # is defined in a function to support less on files
 
-alias lg='ls -lahF --group-directories-first --color=auto'
-alias lr='ls -lahFrt --color=auto'
-alias ls='ls -G --color=auto'
-alias ll='ls -l'
+alias ls='ls --color=auto'
+alias lg='ls --group-directories-first'
+alias ll='lg -lh'
+alias la='lg -lAh'
+alias lrt='ls -lahFrt'
+alias lr='lrt'
 
 # list directories when no arguments are provided,
 # list directories of the argument if the argument is a directory
 # use less on the argumetn if the argument is a file
 myls() {
     if [[ $# -eq 0 || -d $1 ]]; then
-        ls $1 -lahF --color=auto
+        ls $1 -lahF
     else
         less $1
     fi
