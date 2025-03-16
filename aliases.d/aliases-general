@@ -1,0 +1,84 @@
+##################################################
+#                GENERAL ALIASES                 #
+##################################################
+
+alias history='fc -l 1'
+alias grep='grep  --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+
+# Show the diff between two commands
+# Usage : DIFF "ls -l" "ls-la"
+DIFF() {
+  diff <($1) <($2)
+}
+
+# GREP find in file : GREP . string
+GREP (){
+    grep --color=auto -nRHIi --no-messages $2 $1 
+}
+
+# FIND find filename : FIND . filename
+FIND (){
+    find $1 -print | grep -i $2
+}
+
+alias TOP="top -u $USER"
+
+##################################################
+#                  LS ALIASES                    #
+##################################################
+
+# alias l='ls -lahF --color=auto' # is defined in a function to support less on files
+
+alias ls='ls --color=auto'
+alias lg='ls --group-directories-first'
+alias ll='lg -lh'
+alias la='lg -lAh'
+alias lrt='ls -lahFrt'
+alias lr='lrt'
+
+# list directories when no arguments are provided,
+# list directories of the argument if the argument is a directory
+# use less on the argumetn if the argument is a file
+myls() {
+    if [[ $# -eq 0 || -d $1 ]]; then
+        ls $1 -lahF
+    else
+        less $1
+    fi
+}
+alias l="myls"
+
+
+
+##################################################
+#                  CAT ALIASES                   #
+##################################################
+
+# my_cat() {
+  
+# }
+# alias cat=""
+
+
+##################################################
+#            FILES AND FOLDERS ALIASES           #
+##################################################
+alias mkdir='mkdir -p'
+
+# safe file manipulation
+alias cp="cp -i"
+alias mv='mv -i'
+alias rm='rm -i'
+
+# create and cd into dir
+mkcd() {
+    mkdir -p "$1" && cd "$1"
+}
+
+# TODO: create 'bak' function
+
+#Print the content of the last created file (and its name) in the current directory, sorry for the alias name...
+#            --  list only file - latest file -  cat with filename --
+alias caca='ls -tp | grep -v /  | head -1     | xargs tail -v -n +1'
+# same but keep track of the file
+alias CACA='ls -tp | grep -v / | head -1 | xargs tail -f -v -n +1'

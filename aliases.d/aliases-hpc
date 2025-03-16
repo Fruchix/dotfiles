@@ -1,3 +1,10 @@
+##################################################
+#                  HPC ALIASES                   #
+##################################################
+
+alias wsq='watch -n 30 squeue'
+alias wsqu='watch -d -n 2 squeue -u $USER'
+
 move_files_by_uid() {
     shopt -s nullglob  # Avoid errors if no files match
 

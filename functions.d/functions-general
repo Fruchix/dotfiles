@@ -1,0 +1,60 @@
+extract() {
+    echo Extracting $1 ...
+    if [ -f $1 ] ; then
+        case $1 in
+            *.tar.bz2)  tar xjf $1      ;;
+            *.tar.gz)   tar xzf $1      ;;
+            *.bz2)      bunzip2 $1      ;;
+            *.rar)      rar x $1        ;;
+            *.gz)       gunzip $1       ;;
+            *.tar)      tar xf $1       ;;
+            *.tbz2)     tar xjf $1      ;;
+            *.tgz)      tar xzf $1      ;;
+            *.zip)      unzip $1        ;;
+            *.Z)        uncompress $1   ;;
+            *.7z)       7z x $1         ;;
+            *.xz)       xz -d $1        ;; 
+            *)          echo "'$1' cannot be extracted via extract()" ;;
+        esac
+        else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+# backup dir as archive
+bakarch() {
+    local timestamp dest archname
+    if [ "$#" -lt 1 ]; then
+        echo "Usage: backup_directory <source_directory> [destination_directory]"
+        return 1
+    fi
+    if [ "$#" -lt 2 ]; then
+        dest="$(realpath "$1/..")"
+    else
+        dest="$2"
+    fi
+    archname=$(realpath "$1")
+    archname=${archname##*/}
+    timestamp=$(date +%Y%m%d%H%M%S)
+    dest="$dest/bak-$archname-$timestamp.tar.gz"
+    tar -czf "$dest" "$1"
+    echo "Backup of $1 completed at $dest"
+}
+
+replace_in_files() {
+    if [ "$#" -ne 3 ]; then
+        echo "Usage: replace_in_files <directory> <search_text> <replace_text>"
+        return 1
+    fi
+    grep -rl "$2" "$1" | xargs sed -i "s/$2/$3/g"
+}
+
+rename_batch() {
+    if [ "$#" -ne 3 ]; then
+        echo "Usage: rename_batch <directory> <search_text> <replace_text>"
+        return 1
+    fi
+    for file in "$1"/*"$2"*; do
+        mv "$file" "${file//$2/$3}"
+    done
+}
