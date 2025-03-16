@@ -70,6 +70,9 @@ alias cp="cp -i"
 alias mv='mv -i'
 alias rm='rm -i'
 
+# cd the latest directory created
+alias cdd='cd $(ls -dt */ | head -1)'
+
 # create and cd into dir
 mkcd() {
     mkdir -p "$1" && cd "$1"
