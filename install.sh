@@ -26,7 +26,5 @@ if [[ ! -d $HOME/.siu ]]; then
     ./install.sh
     popd
 
-    source $HOME/.bashrc
-
-    siu install -M
+    $HOME/.siu/bin/siu install -M
 fi
