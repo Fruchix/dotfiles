@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-script_dir=$(dirname "$(readlink -f "$0")")
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if grep -q Fruchix/dotfiles:install.sh "$HOME/.bashrc"; then
     echo -e "File '$HOME/.bashrc' is already sourcing Fruchix's dotfiles with the following lines:\n"
