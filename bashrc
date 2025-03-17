@@ -8,7 +8,7 @@ esac
 
 so() { for f in $@; do [ -s $1 ] && source "$f"; done; }
 
-script_dir=$(dirname "$(readlink -f "$0")")
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 so "${script_dir}/aliases.d"/*
 so "${script_dir}/completion.d"/*
