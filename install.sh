@@ -5,9 +5,18 @@ script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 setup_inputrc()
 {
     if [[ -f "$HOME/.inputrc" ]]; then
-        mv "$HOME/.inputrc" "$HOME/.inputrc.bak.$(date '+%Y-%m-%d_%H:%M:%S')"
+        # overwrite the file only if it isnt the same
+        if diff -q "$HOME/.inputrc" inputrc; then
+            echo "inputrc is already linked."
+            return
+        fi
+
+        date=$(date '+%Y-%m-%d_%H:%M:%S')
+        echo "Archiving $HOME/.inputrc into $HOME/.inputrc.bak.${date}"
+        mv "$HOME/.inputrc" "$HOME/.inputrc.bak.${date}"
     fi
 
+    echo "Linking $HOME/.inputrc to ${PWD}/inputrc"
     ln -s "${PWD}/inputrc" "$HOME/.inputrc"
 }
 
@@ -56,7 +65,12 @@ setup_siu()
     fi
 }
 
+echo "--------------------"
 setup_inputrc
+echo "--------------------"
 setup_bashrc
+echo "--------------------"
 setup_zshrc
+echo "--------------------"
 setup_siu
+echo "--------------------"
