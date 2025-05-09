@@ -1,0 +1,3 @@
+
+# use GPG from command line
+export GPG_TTY=$(tty)
