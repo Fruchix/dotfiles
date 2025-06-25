@@ -6,7 +6,7 @@ esac
 
 so() { for f in $@; do [ -s $1 ] && source "$f"; done; }
 
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+script_dir="${0:a:h}"
 
 so "${script_dir}/aliases.d"/*
 so "${script_dir}/completion.d"/*
