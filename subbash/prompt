@@ -1,4 +1,7 @@
 ### Prompt setup ###
+# disable default virtual env prompt
+export VIRTUAL_ENV_DISABLE_PROMPT=1
+
 parse_git_branch() {
     local dirty=$([[ $(git status --porcelain 2> /dev/null) ]] && echo "*")
     local col
@@ -13,4 +16,4 @@ add_exit_code() {
 }
 
 export PS1='
-\[\e[1m\]$(add_exit_code) \u@\h \[\e[94m\]\w$(parse_git_branch)\[\e[00m\] \$ '
+\[\e[1m\]$(add_exit_code) $( [[ -n "$VIRTUAL_ENV" ]] && echo "($(basename $VIRTUAL_ENV)) " )\u@\h \[\e[94m\]\w$(parse_git_branch)\[\e[00m\] \$ '
