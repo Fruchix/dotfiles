@@ -16,4 +16,4 @@ add_exit_code() {
 }
 
 export PS1='
-\[\e[1m\]$(add_exit_code) $( [[ -n "$VIRTUAL_ENV" ]] && echo "($(basename $VIRTUAL_ENV)) " )\u@\h \[\e[94m\]\w$(parse_git_branch)\[\e[00m\] \$ '
+\[\e[1m\]$(add_exit_code) $( [[ -n "$VIRTUAL_ENV" && "$(which python)" == "$VIRTUAL_ENV"* ]] && echo "($(basename $VIRTUAL_ENV)) " )\u@\h \[\e[94m\]\w$(parse_git_branch)\[\e[00m\] \$ '
