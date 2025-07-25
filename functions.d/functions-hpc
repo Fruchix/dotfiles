@@ -1,0 +1,69 @@
+FIND_LIB() {
+    local default_search_dirs="/usr/local /opt /usr"
+    if [[ "$#" -lt 1 ]]; then
+        echo "Find libraries and header files."
+        echo ""
+        echo "Usage: FIND_LIB <toolname> [toolname]... [--dir=/path/to/dir]..."
+        echo "Examples: FIND_LIB cxi"
+        echo "          FIND_LIB cxi --dir=/appl (same as: FIND_LIB --dir=/appl cxi)"
+        echo ""
+        echo "Default search in: ${default_search_dirs}"
+        return 1
+    fi
+    local toolnames
+    local option_dirs=""
+
+    while [[ $# -gt 0 ]]; do
+        opt="$1";
+        shift;
+        case "$opt" in
+            "--" ) break 2;;
+            "-" ) break 2;;
+            "-d"|"--dir" )
+                option_dirs="${option_dirs} $1"
+                shift
+                ;;
+            "--dir="* )
+                option_dirs="${option_dirs} ${opt#*=}"
+                ;;
+            -*|--*)
+                echo >&2 "Invalid option: $opt"
+                return 1
+                ;;
+            *)
+                toolnames+=("$opt")
+                ;;
+        esac
+    done
+
+    local tmpfile=$(mktemp /tmp/FIND_LIB.XXXXXX)
+
+    CLEAN_FIND_LIB() {
+        local res=$#
+        
+        /bin/rm $tmpfile
+        unset clean
+        return $res
+    }
+    trap clean INT
+
+    local search_dirs=$(echo "${default_search_dirs} ${option_dirs}" | tr -s ' ')
+
+    echo "Searching directories: ${search_dirs}"
+    echo "Searching for: ${toolnames[*]}"
+    echo ""
+
+    find $search_dirs -type f 2>/dev/null > $tmpfile
+
+    local name
+    for name in ${toolnames[@]}; do
+        echo "----- Searching for ${name} files -----"
+        echo "--- Libraries found for ${name}:"
+        cat $tmpfile | grep "lib${name}.*.so.*"
+        echo "--- Headers found for ${name}:"
+        cat $tmpfile | grep "lib${name}.*.h"
+        echo ""
+    done
+
+    CLEAN_FIND_LIB
+}
