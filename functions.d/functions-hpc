@@ -59,9 +59,9 @@ FIND_LIB() {
     for name in ${toolnames[@]}; do
         echo "----- Searching for ${name} files -----"
         echo "--- Libraries found for ${name}:"
-        cat $tmpfile | grep "lib${name}.*.so.*"
+        cat $tmpfile | grep "lib${name}[^/]*\.so.[^/]*"
         echo "--- Headers found for ${name}:"
-        cat $tmpfile | grep "lib${name}.*.h"
+        cat $tmpfile | grep "[^/]*${name}\.h$"
         echo ""
     done
 
