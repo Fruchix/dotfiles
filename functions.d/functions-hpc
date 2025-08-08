@@ -42,10 +42,11 @@ FIND_LIB() {
         local res=$#
         
         /bin/rm $tmpfile
-        unset clean
+        unset CLEAN_FIND_LIB
+        trap - INT
         return $res
     }
-    trap clean INT
+    trap CLEAN_FIND_LIB INT
 
     local search_dirs=$(echo "${default_search_dirs} ${option_dirs}" | tr -s ' ')
 
