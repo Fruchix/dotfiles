@@ -19,12 +19,15 @@ FIND_LIB() {
         case "$opt" in
             "--" ) break 2;;
             "-" ) break 2;;
-            "-d"|"--dir" )
-                option_dirs="${option_dirs} $1"
-                shift
-                ;;
-            "--dir="* )
-                option_dirs="${option_dirs} ${opt#*=}"
+            "-d"|"--dir="* )
+                local value
+                if [[ ${#opt} -eq 2 ]]; then
+                    value="$1"
+                    shift
+                else
+                    value="${opt#*=}"
+                fi
+                option_dirs="${option_dirs} $value"
                 ;;
             -*|--*)
                 echo >&2 "Invalid option: $opt"
@@ -39,16 +42,21 @@ FIND_LIB() {
     local tmpfile=$(mktemp /tmp/FIND_LIB.XXXXXX)
 
     CLEAN_FIND_LIB() {
-        local res=$#
+        local ret=$#
         
         /bin/rm $tmpfile
         unset CLEAN_FIND_LIB
         trap - INT
-        return $res
+        return $ret
     }
     trap CLEAN_FIND_LIB INT
 
-    local search_dirs=$(echo "${default_search_dirs} ${option_dirs}" | tr -s ' ')
+    local search_dirs
+    if [[ -n "${option_dirs}" ]]; then
+        search_dirs=$(echo "${option_dirs}" | tr -s ' ')
+    else
+        search_dirs=$(echo "${default_search_dirs}" | tr -s ' ')
+    fi
 
     echo "Searching directories: ${search_dirs}"
     echo "Searching for: ${toolnames[*]}"
