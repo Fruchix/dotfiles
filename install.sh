@@ -61,7 +61,8 @@ setup_siu()
         ./SIU/install
 
         source $HOME/.siu/siu_bashrc
-        $HOME/.siu/bin/siu install -M
+        # $HOME/.siu/bin/siu install -M
+        echo "[SIU] Install missing softwares using: siu install -M"
     fi
 }
 
