@@ -1,3 +1,6 @@
 
 # use GPG from command line
 export GPG_TTY=$(tty)
+
+# Set default editor
+export EDITOR=vim
