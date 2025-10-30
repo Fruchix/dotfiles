@@ -11,6 +11,7 @@ script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 so "${script_dir}/aliases.d"/*
 so "${script_dir}/completion.d"/*
 so "${script_dir}/functions.d"/*
+so "${script_dir}/exports.d"/*
 so "${script_dir}/subbash"/*
 
 unset script_dir
