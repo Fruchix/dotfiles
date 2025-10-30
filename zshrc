@@ -10,6 +10,7 @@ script_dir="${0:a:h}"
 
 so "${script_dir}/aliases.d"/*
 so "${script_dir}/completion.d"/*
+so "${script_dir}/exports.d"/*
 so "${script_dir}/functions.d"/*
 
 unset script_dir
