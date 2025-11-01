@@ -3,7 +3,7 @@
 ##################################################
 
 alias history='fc -l 1'
-alias grep='grep  --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 
 # Show the diff between two commands
 # Usage : DIFF "ls -l" "ls-la"
@@ -24,6 +24,7 @@ FIND (){
 alias TOP="top -u $USER"
 
 alias SSHADD="eval `ssh-agent` && ssh-add"
+
 
 ##################################################
 #                  LS ALIASES                    #
@@ -50,6 +51,42 @@ myls() {
 }
 alias l="myls"
 
+
+##################################################
+#               NAVIGATION ALIASES               #
+##################################################
+
+# Thanks to Jean Pourroy.
+# pwd that can take argument : pwd | pwd File1 File2
+# Will output the absolute path to provided file
+mypwd() {
+    if [[ $# -eq 0 ]]; then
+        command pwd
+    else
+        for arg in "$@"; do
+            if [[ -e "$arg" ]]; then
+                echo "$(realpath "$arg")"
+            else
+                echo "Custom pwd error. Invalid arg: $arg"
+            fi
+        done
+    fi
+}
+# shadows default "pwd"
+alias pwd='mypwd "$@"'
+
+# Thanks to Jean Pourroy.
+# Change directory even if it is a filename, then list files
+# Shadows default "cd"
+cd() {
+    if [[ -f "$1" ]]; then
+        cd "$(dirname "$1")"
+    else
+        builtin cd "$@"
+        # uses alias ll defined above
+        ll
+    fi
+}
 
 
 ##################################################
