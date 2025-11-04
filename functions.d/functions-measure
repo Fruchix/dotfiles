@@ -1,0 +1,23 @@
+
+# usage: repeat N <command> [options]...
+repeat() {
+    local n=$1
+    shift
+    local i
+    for ((i=0; i<n; i++)); do
+        "$@"
+    done
+}
+
+time_exec_ms() {
+    local t_start
+    local t_end
+    local t_elapsed
+    t_start=$(date +%s%N)
+    "$@" &> /dev/null
+    local status=$?
+    t_end=$(date +%s%N)
+    t_elapsed=$(( (t_end - t_start) / 1000000 ))  # ms
+    echo "${t_elapsed}"
+    return $status
+}
