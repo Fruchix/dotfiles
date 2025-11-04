@@ -1,6 +1,6 @@
 
 # usage: repeat N <command> [options]...
-repeat() {
+REPEAT() {
     local n=$1
     shift
     local i
@@ -9,7 +9,7 @@ repeat() {
     done
 }
 
-time_exec_ms() {
+TIME_EXEC_MS() {
     local t_start
     local t_end
     local t_elapsed
