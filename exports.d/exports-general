@@ -4,3 +4,25 @@ export GPG_TTY=$(tty)
 
 # Set default editor
 export EDITOR=vim
+
+# DOTFILES_HOME detection
+
+# in a script that can be sourced or either executed by zsh and bash
+if [ -n "${BASH_SOURCE:-}" ]; then
+  # Bash
+  export_general_path="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+  # zsh
+  export_general_path="${(%):-%x}"
+fi
+export_general_dir=$( builtin cd -- "$( dirname -- "$export_general_path" )" && builtin pwd )
+
+DOTFILES_HOME="$(dirname "$export_general_dir")"
+export DOTFILES_HOME
+
+unset export_general_dir
+
+# PATH additions
+
+# Add ~/.local/bin to PATH if not already present
+[[ ":${PATH}:" =~ ":$HOME/.local/bin:" ]] || export PATH="$HOME/.local/bin:$PATH"
