@@ -26,3 +26,9 @@ unset export_general_dir
 
 # Add ~/.local/bin to PATH if not already present
 [[ ":${PATH}:" =~ ":$HOME/.local/bin:" ]] || export PATH="$HOME/.local/bin:$PATH"
+
+# STAR configuration
+if command -v star >/dev/null 2>&1; then
+  export _STAR_CONFIG_FILE="$DOTFILES_HOME/config.d/star_config.sh"
+  eval "$(command star init "$([[ -n $BASH_VERSION ]] && echo bash || echo zsh)")"
+fi
