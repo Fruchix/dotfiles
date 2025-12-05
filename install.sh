@@ -4,9 +4,11 @@ script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 setup_inputrc()
 {
+    local dotfiles_inputrc="${script_dir}/inputrc"
+
     if [[ -e "$HOME/.inputrc" ]]; then
         # overwrite the file only if it isnt the same
-        if diff -q "$HOME/.inputrc" inputrc; then
+        if diff -q "$HOME/.inputrc" "${dotfiles_inputrc}"; then
             echo "inputrc is already linked."
             return
         fi
@@ -16,8 +18,8 @@ setup_inputrc()
         mv "$HOME/.inputrc" "$HOME/.inputrc.bak.${date}"
     fi
 
-    echo "Linking $HOME/.inputrc to ${script_dir}/inputrc"
-    ln -s "${script_dir}/inputrc" "$HOME/.inputrc"
+    echo "Linking $HOME/.inputrc to ${dotfiles_inputrc}"
+    ln -s "${dotfiles_inputrc}" "$HOME/.inputrc"
 }
 
 setup_bashrc()
@@ -70,20 +72,20 @@ run_setup_command() {
     local setup_cmd="$1"
 
     while true; do
-    echo -n "Run $setup_cmd? [y/N] "
-    read -r
-    case $REPLY in
-        [Yy]|[Yy][Ee][Ss])
-            echo "--------------------"
-            $setup_cmd
-            break
-            ;;
-        [Nn]|[Nn][Oo]|"")
-            break
-            ;;
-        *) echo "Not a valid answer.";;
-    esac
-done
+        echo -n "Run $setup_cmd? [y/N] "
+        read -r
+        case $REPLY in
+            [Yy]|[Yy][Ee][Ss])
+                $setup_cmd
+                break
+                ;;
+            [Nn]|[Nn][Oo]|"")
+                break
+                ;;
+            *) echo "Not a valid answer.";;
+        esac
+    done
+    echo "--------------------------------------------------------------------------------"
 }
 
 run_setup_command setup_inputrc
