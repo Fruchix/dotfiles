@@ -66,12 +66,27 @@ setup_siu()
     fi
 }
 
-echo "--------------------"
-setup_inputrc
-echo "--------------------"
-setup_bashrc
-echo "--------------------"
-setup_zshrc
-echo "--------------------"
-setup_siu
-echo "--------------------"
+run_setup_command() {
+    local setup_cmd="$1"
+
+    while true; do
+    echo -n "Run $setup_cmd? [y/N] "
+    read -r
+    case $REPLY in
+        [Yy]|[Yy][Ee][Ss])
+            echo "--------------------"
+            $setup_cmd
+            break
+            ;;
+        [Nn]|[Nn][Oo]|"")
+            break
+            ;;
+        *) echo "Not a valid answer.";;
+    esac
+done
+}
+
+run_setup_command setup_inputrc
+run_setup_command setup_bashrc
+run_setup_command setup_zshrc
+run_setup_command setup_siu
