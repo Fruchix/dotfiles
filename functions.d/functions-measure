@@ -15,9 +15,9 @@ TIME_EXEC_MS() {
     local t_elapsed
     t_start=$(date +%s%N)
     "$@" > /dev/null
-    local status=$?
+    local ret=$?
     t_end=$(date +%s%N)
     t_elapsed=$(( (t_end - t_start) / 1000000 ))  # ms
     echo "${t_elapsed}"
-    return $status
+    return $ret
 }

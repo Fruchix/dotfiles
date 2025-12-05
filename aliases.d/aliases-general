@@ -13,18 +13,17 @@ DIFF() {
 
 # GREP find in file : GREP . string
 GREP (){
-    grep --color=auto -nRHIi --no-messages $2 $1 
+    grep --color=auto -nRHIi --no-messages "$2" "$1" 
 }
 
 # FIND find filename : FIND . filename
 FIND (){
-    find $1 -print | grep -i $2
+    find "$1" -print | grep -i "$2"
 }
 
-alias TOP="top -u $USER"
+alias TOP='top -u $USER'
 
-alias SSHADD="eval `ssh-agent` && ssh-add"
-
+alias SSHADD='eval `ssh-agent` && ssh-add'
 
 ##################################################
 #                  LS ALIASES                    #
@@ -61,7 +60,7 @@ alias l="myls"
 # Will output the absolute path to provided file
 mypwd() {
     if [[ $# -eq 0 ]]; then
-        command pwd
+        builtin pwd
     else
         for arg in "$@"; do
             if [[ -e "$arg" ]]; then
