@@ -4,7 +4,7 @@ script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 setup_inputrc()
 {
-    if [[ -f "$HOME/.inputrc" ]]; then
+    if [[ -e "$HOME/.inputrc" ]]; then
         # overwrite the file only if it isnt the same
         if diff -q "$HOME/.inputrc" inputrc; then
             echo "inputrc is already linked."
@@ -16,8 +16,8 @@ setup_inputrc()
         mv "$HOME/.inputrc" "$HOME/.inputrc.bak.${date}"
     fi
 
-    echo "Linking $HOME/.inputrc to ${PWD}/inputrc"
-    ln -s "${PWD}/inputrc" "$HOME/.inputrc"
+    echo "Linking $HOME/.inputrc to ${script_dir}/inputrc"
+    ln -s "${script_dir}/inputrc" "$HOME/.inputrc"
 }
 
 setup_bashrc()
