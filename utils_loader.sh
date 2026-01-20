@@ -1,15 +1,15 @@
 DFLOADER() {
     if [[ $# -lt 1 ]]; then
-        echo "Usage: DFLOADER <load|unload|reload|list> [UTILITY_NAME [...]] [--all]" >&2
+        echo "Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]" >&2
         return 1
     fi
 
     local mode="$1"
     case "$mode" in
-        load|unload|reload|list) ;;
+        load|unload|reload|list|show) ;;
         *)
             echo "Invalid mode: $mode." >&2
-            echo "Usage: DFLOADER <load|unload|reload|list> [UTILITY_NAME [...]] [--all]" >&2
+            echo "Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]" >&2
             return 1
             ;;
     esac
@@ -49,7 +49,7 @@ DFLOADER() {
         return 0
     fi
 
-    # load or unload modes only
+    # all other modes
 
     if [[ "$2" == "--all" ]]; then
         local utils_list=()
@@ -105,6 +105,21 @@ DFLOADER() {
 }' "${util_file}" 2>/dev/null)
 
         case "$mode" in
+            show)
+                echo "Utility: ${util_file}"
+                if [[ "${#func_names[@]}" -gt 0 ]]; then
+                    echo "Functions:"
+                    for func in "${func_names[@]}"; do
+                        echo " - $func"
+                    done
+                fi
+                if [[ "${#alias_names[@]}" -gt 0 ]]; then
+                    echo "Aliases:"
+                    for alias in "${alias_names[@]}"; do
+                        echo " - $alias"
+                    done
+                fi
+                ;;
             reload)
                 DFLOADER "unload" "$util_name"
                 DFLOADER "load" "$util_name"
@@ -169,7 +184,7 @@ DFLOADER() {
 
 _complete_DFLOADER() {
     local cur_word="${COMP_WORDS[COMP_CWORD]}"
-    local commands="load unload reload list"
+    local commands="load unload reload list show"
 
     if [[ ${COMP_CWORD} -eq 1 ]]; then
         COMPREPLY=( $(compgen -W "${commands}" -- "${cur_word}") )
