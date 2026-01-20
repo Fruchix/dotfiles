@@ -1,15 +1,18 @@
 DFLOADER() {
+    local usage_oneline="Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]"
     if [[ $# -lt 1 ]]; then
-        echo "Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]" >&2
+        echo "$usage_oneline" >&2
         return 1
     fi
 
     local mode="$1"
     case "$mode" in
-        load|unload|reload|list|show) ;;
+        load|unload|reload|list|show)
+            shift
+            ;;
         *)
             echo "Invalid mode: $mode." >&2
-            echo "Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]" >&2
+            echo "$usage_oneline" >&2
             return 1
             ;;
     esac
