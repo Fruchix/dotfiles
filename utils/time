@@ -1,4 +1,3 @@
-
 # usage: repeat N <command> [options]...
 REPEAT() {
     local n=$1

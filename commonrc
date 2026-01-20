@@ -1,26 +1,26 @@
 
+### DOTFILES_HOME setup ###
+
+# in a script that can be sourced or either executed by zsh and bash
+if [ -n "${BASH_SOURCE:-}" ]; then
+  # Bash
+  commonrc_path="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+  # zsh
+  commonrc_path="${(%):-%x}"
+fi
+commonrc_dir=$( builtin cd -- "$( dirname -- "$commonrc_path" )" && builtin pwd )
+export DOTFILES_HOME="$commonrc_dir"
+unset commonrc_dir
+unset commonrc_path
+
+### Other exports ###
+
 # use GPG from command line
 export GPG_TTY=$(tty)
 
 # Set default editor
 export EDITOR=vim
-
-# DOTFILES_HOME detection
-
-# in a script that can be sourced or either executed by zsh and bash
-if [ -n "${BASH_SOURCE:-}" ]; then
-  # Bash
-  export_general_path="${BASH_SOURCE[0]}"
-elif [ -n "${ZSH_VERSION:-}" ]; then
-  # zsh
-  export_general_path="${(%):-%x}"
-fi
-export_general_dir=$( builtin cd -- "$( dirname -- "$export_general_path" )" && builtin pwd )
-
-DOTFILES_HOME="$(dirname "$export_general_dir")"
-export DOTFILES_HOME
-
-unset export_general_dir
 
 # PATH additions
 
@@ -32,3 +32,8 @@ if command -v star >/dev/null 2>&1; then
   export _STAR_CONFIG_FILE="$DOTFILES_HOME/config.d/star_config.sh"
   eval "$(command star init "$([[ -n $BASH_VERSION ]] && echo bash || echo zsh)")"
 fi
+
+source "${DOTFILES_HOME}/utils_loader.sh"
+
+### Load other dotfiles files ###
+DFLOADER load general git math time archive files > /dev/null 

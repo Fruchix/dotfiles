@@ -1,3 +1,31 @@
+##################################################
+#                  HPC ALIASES                   #
+##################################################
+
+alias wsq='watch -n 30 squeue'
+alias wsqu='watch -d -n 2 squeue -u $USER'
+
+move_files_by_uid() {
+    shopt -s nullglob  # Avoid errors if no files match
+
+    for file in *; do
+        if [[ -f "$file" ]]; then
+            # Extract UID from the filename (assuming numeric UID)
+            if [[ "$file" =~ ([0-9]{4,}+).*out ]]; then
+                uid="${BASH_REMATCH[1]}"
+                dir=$(find . -maxdepth 1 -type d -name "*$uid*" | head -n 1)
+
+                if [[ -n "$dir" ]]; then
+                    echo "Moving $file to $dir/"
+                    mv "$file" "$dir/"
+                else
+                    echo "No matching directory found for UID $uid in $file"
+                fi
+            fi
+        fi
+    done
+}
+
 FIND_LIB() {
     local default_search_dirs="/usr/local /opt /usr"
     if [[ "$#" -lt 1 ]]; then
@@ -42,9 +70,9 @@ FIND_LIB() {
     local tmpfile=$(mktemp /tmp/FIND_LIB.XXXXXX)
 
     CLEAN_FIND_LIB() {
-        local ret=$#
+        local ret=$?
         
-        /bin/rm $tmpfile
+        /bin/rm "$tmpfile"
         unset CLEAN_FIND_LIB
         trap - INT
         return $ret
@@ -62,15 +90,15 @@ FIND_LIB() {
     echo "Searching for: ${toolnames[*]}"
     echo ""
 
-    find $search_dirs -type f 2>/dev/null > $tmpfile
+    find $search_dirs -type f 2>/dev/null > "$tmpfile"
 
     local name
     for name in ${toolnames[@]}; do
         echo "----- Searching for ${name} files -----"
         echo "--- Libraries found for ${name}:"
-        cat $tmpfile | grep "lib${name}[^/]*\.so.[^/]*"
+        cat "$tmpfile" | grep "lib${name}[^/]*\.so.[^/]*"
         echo "--- Headers found for ${name}:"
-        cat $tmpfile | grep "[^/]*${name}\.h$"
+        cat "$tmpfile" | grep "[^/]*${name}\.h$"
         echo ""
     done
 
