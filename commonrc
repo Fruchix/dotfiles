@@ -36,4 +36,4 @@ fi
 source "${DOTFILES_HOME}/utils_loader.sh"
 
 ### Load other dotfiles files ###
-DFLOADER load general git math time archive files > /dev/null 
+DFLOADER load general git math time archive files --quiet > /dev/null 
