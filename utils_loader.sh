@@ -1,5 +1,5 @@
 DFLOADER() {
-    local usage_oneline="Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all]"
+    local usage_oneline="Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all] [--quiet]"
     if [[ $# -lt 1 ]]; then
         echo "$usage_oneline" >&2
         return 1
@@ -53,16 +53,35 @@ DFLOADER() {
     fi
 
     # all other modes
+    local option_all=0
+    local option_quiet=0
 
-    if [[ "$2" == "--all" ]]; then
-        local utils_list=()
+    local utils_positional_args=()
+    while [[ $# -gt 0 ]]; do
+        opt="$1";
+        shift;
+        case "$opt" in
+            -- ) break 2;;
+            - ) break 2;;
+            -a|--all )  option_all=1    ;;
+            -q|--quiet )option_quiet=1  ;;
+            -*)
+                echo "Invalid option: $opt" >&2
+                return 1
+                ;;
+            *)
+                utils_positional_args+=("$opt")
+            ;;
+        esac
+    done
+
+    local utils_list=()
+    if [[ "$option_all" -eq 1 ]]; then
         while IFS= read -r; do
             utils_list+=("$REPLY")
         done < <(find "${utils_dir}" -maxdepth 1 -type f -exec basename {} \;)
-
-        DFLOADER "$mode" "${utils_list[@]}"
-
-        return 0
+    else
+        utils_list=("${utils_positional_args[@]}")
     fi
 
     local util_name_clean
@@ -70,9 +89,8 @@ DFLOADER() {
     local util_file
     local func_names
     local alias_names
-    while [[ "$#" -gt 1 ]]; do
-        shift
-        util_name="$1"
+    local tmp_var
+    for util_name in "${utils_list[@]}"; do
         util_file="${utils_dir}/${util_name}"
 
         if [[ ! -e "${util_file}" ]]; then
@@ -84,7 +102,14 @@ DFLOADER() {
 
         func_names=()
         while IFS= read -r; do
-            func_names+=("$REPLY")
+            tmp_var="$REPLY"
+
+            # remove leading whitespace characters
+            tmp_var="${tmp_var#"${tmp_var%%[![:space:]]*}"}"
+            # remove trailing whitespace characters
+            tmp_var="${tmp_var%"${tmp_var##*[![:space:]]}"}"
+
+            func_names+=("$tmp_var")
         done < <(awk '
 /^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{/ {
     sub(/^[[:space:]]*/, "");
@@ -106,7 +131,6 @@ DFLOADER() {
     sub(/=.*/, "");
     print;
 }' "${util_file}" 2>/dev/null)
-
         case "$mode" in
             show)
                 echo "Utility: ${util_file}"
@@ -124,27 +148,35 @@ DFLOADER() {
                 fi
                 ;;
             reload)
-                DFLOADER "unload" "$util_name"
-                DFLOADER "load" "$util_name"
+                if [[ "$option_quiet" -eq 1 ]]; then
+                    DFLOADER "unload" "$util_name" --quiet
+                    DFLOADER "load" "$util_name" --quiet
+                else
+                    DFLOADER "unload" "$util_name"
+                    DFLOADER "load" "$util_name"
+                fi
                 ;;
             load)
                 if [[ ":${_DF_LOADED_MODULES}:" == *":${util_name_clean}:"* ]]; then
-                    echo "Utility already loaded: ${util_name}"
+                    [[ "$option_quiet" -ne 1 ]] && echo "Utility already loaded: ${util_name}"
                     continue
                 fi
 
-                echo "Loading utility: ${util_name}"
-                if [[ "${#func_names[@]}" -gt 0 ]]; then
-                    echo "Functions:"
-                    for func in "${func_names[@]}"; do
-                        echo " - $func"
-                    done
-                fi
-                if [[ "${#alias_names[@]}" -gt 0 ]]; then
-                    echo "Aliases:"
-                    for alias in "${alias_names[@]}"; do
-                        echo " - $alias"
-                    done
+                if [[ "$option_quiet" -ne 1 ]]; then
+                    echo "Loading utility: ${util_name}"
+                    if [[ "${#func_names[@]}" -gt 0 ]]; then
+                        echo "Functions:"
+                        for func in "${func_names[@]}"; do
+                            echo " - $func"
+                        done
+                    fi
+                    if [[ "${#alias_names[@]}" -gt 0 ]]; then
+                        echo "Aliases:"
+                        for alias in "${alias_names[@]}"; do
+                            echo " - $alias"
+                        done
+                    fi
+                    echo ""
                 fi
                 . "${util_file}"
                 if [[ -n "${_DF_LOADED_MODULES}" ]]; then
@@ -155,23 +187,35 @@ DFLOADER() {
                 ;;
             unload)
                 if [[ ":${_DF_LOADED_MODULES}:" != *":${util_name_clean}:"* ]]; then
-                    echo "Utility not loaded: ${util_name}"
+                    [[ "$option_quiet" -ne 1 ]] && echo "Utility not loaded: ${util_name}"
                     continue
                 fi
 
-                echo "Unloading utility: ${util_name}"
+                if [[ "$option_quiet" -ne 1 ]]; then
+                    echo "Unloading utility: ${util_name}"
+                    if [[ -n "${func_names[*]}" ]]; then
+                        echo "Functions:"
+                        for func in "${func_names[@]}"; do
+                            echo " - $func"
+                        done
+                    fi
+                    if [[ -n "${alias_names[*]}" ]]; then
+                        echo "Aliases:"
+                        for alias in "${alias_names[@]}"; do
+                            echo " - $alias"
+                        done
+                    fi
+                    echo ""
+                fi
+
                 if [[ -n "${func_names[*]}" ]]; then
-                    echo "Functions:"
                     for func in "${func_names[@]}"; do
                         unset -f "$func"
-                        echo " - $func"
                     done
                 fi
                 if [[ -n "${alias_names[*]}" ]]; then
-                    echo "Aliases:"
                     for alias in "${alias_names[@]}"; do
                         unalias "$alias"
-                        echo " - $alias"
                     done
                 fi
                 _DF_LOADED_MODULES=":${_DF_LOADED_MODULES}:"
@@ -181,7 +225,6 @@ DFLOADER() {
                 export _DF_LOADED_MODULES
                 ;;
         esac
-        echo ""
     done
 }
 
