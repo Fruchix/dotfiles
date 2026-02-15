@@ -14,13 +14,19 @@ export DOTFILES_HOME="$commonrc_dir"
 unset commonrc_dir
 unset commonrc_path
 
+
+### XDG ###
+export XDG_CONFIG_HOME="${DOTFILES_HOME}/config.d/"
+
+
 ### Other exports ###
 
 # use GPG from command line
 export GPG_TTY=$(tty)
 
-# Set default editor
+# VIM setup
 export EDITOR=vim
+export VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source $MYVIMRC'
 
 # PATH additions
 

@@ -22,26 +22,6 @@ setup_inputrc()
     ln -s "${dotfiles_inputrc}" "$HOME/.inputrc"
 }
 
-setup_vimrc()
-{
-    local dotfiles_vimrc="${script_dir}/vimrc"
-
-    if [[ -e "$HOME/.vimrc" ]]; then
-        # overwrite the file only if it isnt the same
-        if diff -q "$HOME/.vimrc" "${dotfiles_vimrc}"; then
-            echo "vimrc is already linked."
-            return
-        fi
-
-        date=$(date '+%Y-%m-%d_%H:%M:%S')
-        echo "Archiving $HOME/.vimrc into $HOME/.vimrc.bak.${date}"
-        mv "$HOME/.vimrc" "$HOME/.vimrc.bak.${date}"
-    fi
-
-    echo "Linking $HOME/.vimrc to ${dotfiles_vimrc}"
-    ln -s "${dotfiles_vimrc}" "$HOME/.vimrc"
-}
-
 setup_bashrc()
 {
     if grep -q Fruchix/dotfiles:install.sh "$HOME/.bashrc"; then
@@ -109,7 +89,6 @@ run_setup_command() {
 }
 
 run_setup_command setup_inputrc
-run_setup_command setup_vimrc
 run_setup_command setup_bashrc
 run_setup_command setup_zshrc
 run_setup_command setup_siu
