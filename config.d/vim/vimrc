@@ -38,8 +38,9 @@ filetype indent on
 set autoread
 au FocusGained,BufEnter * silent! checktime
 
-" Map leader is comma
-let mapleader = ","
+" Leader definition
+nnoremap <SPACE> <Nop>
+let mapleader=" "
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -50,8 +51,43 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Plugins
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+call plug#begin()
+
+Plug 'catppuccin/vim', { 'as': 'catppuccin' }
+Plug 'airblade/vim-gitgutter'
+Plug 'itchyny/lightline.vim'
+Plug 'preservim/nerdtree'
+
+call plug#end()
+
+""" Theme plugin
+try
+    colorscheme catppuccin_frappe
+catch
+endtry
+
+set background=dark
+set termguicolors
+
+" Apply catppuccin theme to status line
+let g:lightline = {'colorscheme': 'catppuccin_frappe'}
+
+
+""" NERDTree plugin
+nnoremap <leader>e :NERDTreeToggle<CR>
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | call feedkeys(":quit\<CR>:\<BS>") | endif
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Display line numbers
+set number
+
 " Always 7 visible lines under and above the cursor
 set so=7
 
@@ -111,8 +147,9 @@ if has("gui_macvim")
     autocmd GUIEnter * set vb t_vb=
 endif
 
-" Add a bit extra margin to the left
-set foldcolumn=1
+" No extra margin on the left
+set foldcolumn=0
+set signcolumn=auto
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -128,13 +165,6 @@ set regexpengine=0
 if $COLORTERM == 'gnome-terminal'
     set t_Co=256
 endif
-
-try
-    colorscheme desert
-catch
-endtry
-
-set background=dark
 
 " Set extra options when running in GUI mode
 if has("gui_running")
@@ -182,38 +212,9 @@ set si "Smart indent
 set wrap "Wrap lines
 
 
-""""""""""""""""""""""""""""""
-" Visual mode
-""""""""""""""""""""""""""""""
-" Start selection with Shift + arrows
-nnoremap <S-Left>  v<Left>
-nnoremap <S-Right> v<Right>
-nnoremap <S-Up>    v<Up>
-nnoremap <S-Down>  v<Down>
-" Extend selection if already in visual mode
-vnoremap <S-Left>  <Left>
-vnoremap <S-Right> <Right>
-vnoremap <S-Up>    <Up>
-vnoremap <S-Down>  <Down>
-
-" Disable hightlight using Escape
-nnoremap <silent> <leader><Enter> :noh
-
-" Custom search and replace bidings
-" Pressing / in visual mode searches for selection
-" vnoremap <silent> / :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
-vnoremap <silent> / y/\V<C-R>=escape(@", '/\')<CR><CR>
-" Pressing leader + r triggers replacement of all those patterns
-vnoremap <leader>r :<C-u>call VisualSelection('replace', '')<CR>
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
-map <C-space> ?
-
 " Smart way to move between windows
 map <C-j> <C-W>j
 map <C-k> <C-W>k
@@ -230,11 +231,23 @@ map <C-l> <C-W>l
 " map <leader>h :bprevious<cr>
 
 " Useful mappings for managing tabs
-" map <leader>tn :tabnew<cr>
-" map <leader>to :tabonly<cr>
-" map <leader>tc :tabclose<cr>
-" map <leader>tm :tabmove
-" map <leader>t<leader> :tabnext<cr>
+map <leader>tn :tabnew<cr>
+map <leader>to :tabonly<cr>
+map <leader>tc :tabclose<cr>
+map <leader>tm :tabmove
+
+" Navigating throught tabs
+noremap <leader><Right> :tabnext<cr>
+noremap <leader><Left> :tabprevious<cr>
+noremap <leader>& 1gt
+noremap <leader>é 2gt
+noremap <leader>" 3gt
+noremap <leader>' 4gt
+noremap <leader>( 5gt
+noremap <leader>§ 6gt
+noremap <leader>è 7gt
+noremap <leader>! 8gt
+noremap <leader>ç 9gt
 
 " Let 'tl' toggle between this and the last accessed tab
 " let g:lasttab = 1
@@ -244,10 +257,10 @@ map <C-l> <C-W>l
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
-map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
+" map <leader>te :tabedit <C-r>=escape(expand("%:p:h"), " ")<cr>/
 
 " Switch CWD to the directory of the open buffer
-map <leader>cd :cd %:p:h<cr>:pwd<cr>
+" map <leader>cd :cd %:p:h<cr>:pwd<cr>
 
 " Specify the behavior when switching between buffers
 try
@@ -279,6 +292,38 @@ set iskeyword=@,48-57,_,192-255
 
 " Display completion menu
 set completeopt=menu,menuone,noselect
+
+" Start selection with Shift + arrows, in whatever mode
+" Start selection if not already in visual mode and extend
+nnoremap <S-Left>  v<Left>
+nnoremap <S-Right> v<Right>
+nnoremap <S-Up>    v<Up>
+nnoremap <S-Down>  v<Down>
+inoremap <S-Left> <Esc>v<Left>
+inoremap <S-Right> <Esc>v<Right>
+inoremap <S-Up> <Esc>v<Up>
+inoremap <S-Down> <Esc>v<Down>
+" Extend selection if already in visual mode
+vnoremap <S-Left>  <Left>
+vnoremap <S-Right> <Right>
+vnoremap <S-Up>    <Up>
+vnoremap <S-Down>  <Down>
+
+" Similarly, use Alt + Shift + arrows to select by word
+nnoremap <M-S-Left>  vb<Left>
+nnoremap <M-S-Right> vw<Right>
+inoremap <M-S-Left> <Esc>vb<Left>
+inoremap <M-S-Right> <Esc>vw<Right>
+
+" Disable hightlight using leader + Escape
+nnoremap <silent> <leader>h :nohlsearch<CR>
+
+" Custom search and replace bidings
+" Pressing / in visual mode searches for selection
+" vnoremap <silent> / :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
+vnoremap <silent> / y/\V<C-R>=escape(@", '/\')<CR><CR>
+" Pressing leader + r triggers replacement of all those patterns
+vnoremap <leader>r :<C-u>call VisualSelection('replace', '')<CR>
 
 " Use alt+j/k to move lines up and down
 nnoremap <M-j> :move .+1<CR>==
@@ -323,16 +368,15 @@ nnoremap <silent> <Leader>u :call CommentOp('remove')<CR>
 vnoremap <silent> <Leader>c <Esc>:execute "'<,'>call CommentOp('add')"<CR>
 vnoremap <silent> <Leader>u <Esc>:execute "'<,'>call CommentOp('remove')"<CR>
 
+" Surround Mappings
+xnoremap <silent> " :call Surround(' "', '"')<CR>
+xnoremap <silent> ' :call Surround(" '", "'")<CR>
+xnoremap <silent> ( :call Surround(' (', ')')<CR>
+xnoremap <silent> [ :call Surround(' [', ']')<CR>
+xnoremap <silent> { :call Surround(' {', '}')<CR>
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
-
-if has("mac") || has("macunix")
-  nmap <D-j> <M-j>
-  nmap <D-k> <M-k>
-  vmap <D-j> <M-j>
-  vmap <D-k> <M-k>
-endif
 
 " Delete trailing white space on save, useful for some filetypes ;)
 fun! CleanExtraSpaces()
@@ -465,4 +509,27 @@ function! CommentOp(action) range
 
     " Restore window view
     call winrestview(l:save_view)
+endfunction
+
+
+" Vanilla Surround Function
+function! Surround(char_start, char_end)
+    " Cut the text into the unnamed register "
+    normal! gvc
+
+    " Get the content from the register
+    let l:content = @"
+
+    " Trim any trailing newline if the selection was Linewise (V)
+    " This fixes the 'extra spacing' or broken line issue.
+    if l:content =~ "\n$"
+        let l:content = substitute(l:content, '\n$', '', '')
+    endif
+
+    " Construct the new string
+    let l:new_text = a:char_start . l:content . a:char_end
+
+    " Paste it back literally (P prevents extra indentation logic)
+    let @" = l:new_text
+    normal! P
 endfunction
