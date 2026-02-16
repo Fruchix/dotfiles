@@ -71,6 +71,8 @@ Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
 Plug 'preservim/nerdtree'
 Plug 'tpope/vim-commentary'
+Plug 'dense-analysis/ale'
+Plug 'vim-scripts/AutoComplPop'
 
 call plug#end()
 
@@ -117,6 +119,10 @@ let g:gitgutter_sign_modified_removed = '▋'
 """ Commentary plugin
 vnoremap <leader>c  <Plug>Commentary
 nnoremap <leader>c <Plug>CommentaryLine
+
+
+""" ALE Plugin (syntax highlighting, linting, ...)
+let g:ale_completion_autoimport = 0
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -329,6 +335,12 @@ set iskeyword=@,48-57,192-255
 
 " Display completion menu
 set completeopt=menu,menuone,noselect
+" Display less info when using autocompletion
+set shortmess+=c
+
+" Hack to trigger autocompletion when typing
+" This is required only when not using AutoComplPop
+" autocmd CursorMovedI * if pumvisible() == 0 && !empty(getline('.')[col('.')-2]) && getline('.')[col('.')-2] =~ '[a-zA-Z0-9_]' | call feedkeys("\<C-n>", "n") | endif
 
 " Start selection with Shift + arrows, in whatever mode
 " Start selection if not already in visual mode and extend
