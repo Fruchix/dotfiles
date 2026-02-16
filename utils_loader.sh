@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 DFLOADER() {
     local usage_oneline="Usage: DFLOADER <load|unload|reload|list|show> [UTILITY_NAME [...]] [--all] [--quiet]"
     if [[ $# -lt 1 ]]; then
@@ -210,7 +212,7 @@ DFLOADER() {
 
                 if [[ -n "${func_names[*]}" ]]; then
                     for func in "${func_names[@]}"; do
-                        unset -f "$func"
+                        unset -f "$func" &> /dev/null
                     done
                 fi
                 if [[ -n "${alias_names[*]}" ]]; then
