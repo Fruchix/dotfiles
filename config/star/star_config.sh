@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 # Do not set variables regarding the installation of star itself, such as:
 # _STAR_HOME
@@ -8,7 +9,6 @@
 
 # alias sl to stl and add its autocompletion
 if ! alias | grep "^sl=stl$" &> /dev/null; then
-
     alias sl=stl
     _sl() { COMP_WORDS[0]="stl"; export COMP_WORDS; _complete_star; }
     complete -F _sl sl

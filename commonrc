@@ -35,7 +35,6 @@ export VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source $MYVIMRC'
 
 # STAR configuration
 if command -v star >/dev/null 2>&1; then
-  export _STAR_CONFIG_FILE="$DOTFILES_HOME/config/star_config.sh"
   eval "$(command star init "$([[ -n $BASH_VERSION ]] && echo bash || echo zsh)")"
 fi
 
