@@ -4,15 +4,10 @@ case $- in
     *) return;;
 esac
 
-so() { for f in $@; do [ -s $1 ] && source "$f"; done; }
+df_bashrc_dir=$( builtin cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && builtin pwd )
+. "${df_bashrc_dir}/commonrc"
+unset df_bashrc_dir
 
-script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-
-so "${script_dir}/subbash"/*
-so "${script_dir}/exports.d"/*
-so "${script_dir}/aliases.d"/*
-so "${script_dir}/functions.d"/*
-so "${script_dir}/completion.d"/*
-
-unset script_dir
-unset -f so
+df_bashrc_so() { for f in $@; do [ -s $1 ] && source "$f"; done; }
+df_bashrc_so "${DOTFILES_HOME}/subbash"/*
+unset -f df_bashrc_so

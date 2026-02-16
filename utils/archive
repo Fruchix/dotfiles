@@ -40,21 +40,3 @@ bakarch() {
     tar -czf "$dest" "$1"
     echo "Backup of $1 completed at $dest"
 }
-
-replace_in_files() {
-    if [ "$#" -ne 3 ]; then
-        echo "Usage: replace_in_files <directory> <search_text> <replace_text>"
-        return 1
-    fi
-    grep -rl "$2" "$1" | xargs sed -i "s/$2/$3/g"
-}
-
-rename_batch() {
-    if [ "$#" -ne 3 ]; then
-        echo "Usage: rename_batch <directory> <search_text> <replace_text>"
-        return 1
-    fi
-    for file in "$1"/*"$2"*; do
-        mv "$file" "${file//$2/$3}"
-    done
-}

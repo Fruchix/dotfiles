@@ -2,18 +2,18 @@
 # disable default virtual env prompt
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-parse_git_branch() {
+ps1_parse_git_branch() {
     local dirty=$([[ $(git status --porcelain 2> /dev/null) ]] && echo "*")
     local col
     [[ "${dirty}" == "*" ]] && col=$(printf '\001\e[31m\002') || col=$(printf '\001\e[32m\002')
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e "s/* \(.*\)/${col} (\1${dirty})/"
 }
 
-add_exit_code() {
+ps1_add_exit_code() {
     local last_exit_code="$?"
     local prompt="[$last_exit_code]>"
     [[ $last_exit_code -eq 0 ]] && printf "\001\e[32m\002%s\001\e[0m\002" "$prompt" || printf "\001\e[31m\002%s\001\e[0m\002" "$prompt"
 }
 
 export PS1='
-\[\e[1m\]$(add_exit_code) $( [[ -n "$VIRTUAL_ENV" && "$(which python)" == "$VIRTUAL_ENV"* ]] && echo "($(basename $VIRTUAL_ENV)) " )\u@\h \[\e[94m\]\w$(parse_git_branch)\[\e[00m\] \$ '
+\[\e[1m\]$(ps1_add_exit_code) $( [[ -n "$VIRTUAL_ENV" && "$(which python)" == "$VIRTUAL_ENV"* ]] && echo "($(basename $VIRTUAL_ENV)) " )\u@\h \[\e[94m\]\w$(ps1_parse_git_branch)\[\e[00m\] \$ '

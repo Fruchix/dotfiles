@@ -1,0 +1,45 @@
+
+### DOTFILES_HOME setup ###
+
+# in a script that can be sourced or either executed by zsh and bash
+if [ -n "${BASH_SOURCE:-}" ]; then
+  # Bash
+  commonrc_path="${BASH_SOURCE[0]}"
+elif [ -n "${ZSH_VERSION:-}" ]; then
+  # zsh
+  commonrc_path="${(%):-%x}"
+fi
+commonrc_dir=$( builtin cd -- "$( dirname -- "$commonrc_path" )" && builtin pwd )
+export DOTFILES_HOME="$commonrc_dir"
+unset commonrc_dir
+unset commonrc_path
+
+
+### XDG ###
+export XDG_CONFIG_HOME="${DOTFILES_HOME}/config"
+
+
+### Other exports ###
+
+# use GPG from command line
+export GPG_TTY=$(tty)
+
+# VIM setup
+export EDITOR=vim
+export VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source $MYVIMRC'
+
+# PATH additions
+
+# Add ~/.local/bin to PATH if not already present
+[[ ":${PATH}:" =~ ":$HOME/.local/bin:" ]] || export PATH="$HOME/.local/bin:$PATH"
+
+# STAR configuration
+if command -v star >/dev/null 2>&1; then
+  export _STAR_CONFIG_FILE="$DOTFILES_HOME/config/star_config.sh"
+  eval "$(command star init "$([[ -n $BASH_VERSION ]] && echo bash || echo zsh)")"
+fi
+
+source "${DOTFILES_HOME}/utils_loader.sh"
+
+### Load other dotfiles files ###
+DFLOADER load general git math time archive files --quiet > /dev/null 
