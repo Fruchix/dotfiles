@@ -1,4 +1,3 @@
-"if has('unix')
 "    silent !mkdir $XDG_CACHE_HOME/vim/{swapfiles,backup} -p > /dev/null 2>&1
 "    set directory=$XDG_CACHE_HOME/vim/swapfiles//
 "    set backupdir=$XDG_CACHE_HOME/vim/backup//
@@ -54,12 +53,24 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 " Plugins
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+let s:plug_path = expand('$XDG_CONFIG_HOME/vim/autoload/plug.vim')
+
+if !filereadable(s:plug_path)
+    echo "Installing vim-plug..."
+    silent execute '!curl -fLo ' . s:plug_path . ' --create-dirs ' .
+        \ 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    
+    " Auto-install plugins on first launch
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin()
 
 Plug 'catppuccin/vim', { 'as': 'catppuccin' }
 Plug 'airblade/vim-gitgutter'
 Plug 'itchyny/lightline.vim'
 Plug 'preservim/nerdtree'
+Plug 'tpope/vim-commentary'
 
 call plug#end()
 
@@ -80,6 +91,32 @@ let g:lightline = {'colorscheme': 'catppuccin_frappe'}
 nnoremap <leader>e :NERDTreeToggle<CR>
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | call feedkeys(":quit\<CR>:\<BS>") | endif
+
+" Close NERDTree when opening a file
+let NERDTreeQuitOnOpen=1
+
+
+let NERDTreeCustomOpenArgs = {'where': 'p', 'keepAndPrev': 1}
+autocmd FileType nerdtree nmap <buffer> <Right> o
+autocmd FileType nerdtree nmap <buffer> <Left>  x
+
+
+""" Git gutter plugin
+" Force real time refreshes
+let g:gitgutter_realtime = 1
+let g:gitgutter_eager = 1
+set updatetime=150
+
+let g:gitgutter_sign_added = '▎'
+let g:gitgutter_sign_modified = '▎'
+let g:gitgutter_sign_removed = '＿'
+let g:gitgutter_sign_removed_first_line = '▔'
+let g:gitgutter_sign_modified_removed = '▋'
+
+
+""" Commentary plugin
+vnoremap <leader>c  <Plug>Commentary
+nnoremap <leader>c <Plug>CommentaryLine
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -149,7 +186,7 @@ endif
 
 " No extra margin on the left
 set foldcolumn=0
-set signcolumn=auto
+set signcolumn=yes
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -286,9 +323,9 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" A word is only composed of [a-zA-Z0-9_], and characters with accents,
+" A word is only composed of [a-zA-Z0-9], and characters with accents,
 " so moving by word stops on punctuation and other special characters
-set iskeyword=@,48-57,_,192-255
+set iskeyword=@,48-57,192-255
 
 " Display completion menu
 set completeopt=menu,menuone,noselect
@@ -299,10 +336,10 @@ nnoremap <S-Left>  v<Left>
 nnoremap <S-Right> v<Right>
 nnoremap <S-Up>    v<Up>
 nnoremap <S-Down>  v<Down>
-inoremap <S-Left> <Esc>v<Left>
-inoremap <S-Right> <Esc>v<Right>
-inoremap <S-Up> <Esc>v<Up>
-inoremap <S-Down> <Esc>v<Down>
+inoremap <S-Left> <Esc><Right>v<Left>
+inoremap <S-Right> <Esc><Right>v<Right>
+inoremap <S-Up> <Esc><Right>v<Up>
+inoremap <S-Down> <Esc><Right>v<Down>
 " Extend selection if already in visual mode
 vnoremap <S-Left>  <Left>
 vnoremap <S-Right> <Right>
@@ -334,20 +371,20 @@ vnoremap <M-j> :move '>+1<CR>gv=gv
 vnoremap <M-k> :move '<-2<CR>gv=gv
 
 " Use Alt+Up/Down to move lines up and down
-nnoremap <A-Down> :move .+1<CR>==
-nnoremap <A-Up> :move .-2<CR>==
-inoremap <A-Down> <Esc>:move .+1<CR>==gi
-inoremap <A-Up> <Esc>:move .-2<CR>==gi
-vnoremap <A-Down> :move '>+1<CR>gv=gv
-vnoremap <A-Up> :move '<-2<CR>gv=gv
+nnoremap <M-Down> :move .+1<CR>==
+nnoremap <M-Up> :move .-2<CR>==
+inoremap <M-Down> <Esc>:move .+1<CR>==gi
+inoremap <M-Up> <Esc>:move .-2<CR>==gi
+vnoremap <M-Down> :move '>+1<CR>gv=gv
+vnoremap <M-Up> :move '<-2<CR>gv=gv
 
 " Use Alt+Left/Right to move one word at a time
-nnoremap <A-Left>  b
-nnoremap <A-Right> w
-inoremap <A-Left>  <C-o>b
-inoremap <A-Right> <C-o>w
-vnoremap <A-Left>  b
-vnoremap <A-Right> w
+nnoremap <M-Left>  b
+nnoremap <M-Right> w
+inoremap <M-Left>  <C-o>b
+inoremap <M-Right> <C-o>w
+vnoremap <M-Left>  b
+vnoremap <M-Right> w
 " Iterm2 sends alt+right as Esc+f terminals 
 nnoremap <Esc>f w
 inoremap <Esc>f <C-o>w
@@ -360,20 +397,17 @@ vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
 inoremap <S-Tab> <C-d>
 
-" Comment and uncomment lines
-" Operates on the current line only
-nnoremap <silent> <Leader>c :call CommentOp('add')<CR>
-nnoremap <silent> <Leader>u :call CommentOp('remove')<CR>
-" For each line in the visual selection, add or remove comment markers
-vnoremap <silent> <Leader>c <Esc>:execute "'<,'>call CommentOp('add')"<CR>
-vnoremap <silent> <Leader>u <Esc>:execute "'<,'>call CommentOp('remove')"<CR>
-
 " Surround Mappings
 xnoremap <silent> " :call Surround(' "', '"')<CR>
 xnoremap <silent> ' :call Surround(" '", "'")<CR>
 xnoremap <silent> ( :call Surround(' (', ')')<CR>
 xnoremap <silent> [ :call Surround(' [', ']')<CR>
 xnoremap <silent> { :call Surround(' {', '}')<CR>
+
+" Delete following word with Meta+D
+nnoremap <M-d> dw
+inoremap <M-d> <C-o>dw
+
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
@@ -474,43 +508,6 @@ function! VisualSelection(direction, extra_filter) range
     let @/ = l:pattern
     let @" = l:saved_reg
 endfunction
-
-" Helper function to comment and uncomment lines based on the 'commentstring' option
-function! CommentOp(action) range
-    " Save window view (cursor position, scroll, etc.)
-    let l:save_view = winsaveview()
-
-    " Determine comment strings
-    let l:cms = &commentstring
-    if l:cms == '' | let l:cms = '/*%s*/' | endif
-    let l:parts = split(l:cms, '%s', 1)
-    let l:left = l:parts[0]
-    let l:right = (len(l:parts) > 1 ? l:parts[1] : '')
-
-    " Escape strings for regex matching
-    let l:left_esc = escape(l:left, '/*^$.~[]"\')
-    let l:right_esc = escape(l:right, '/*^$.~[]"\')
-
-    " Iterate over every line in the range
-    for l:lineno in range(a:firstline, a:lastline)
-        let l:line = getline(l:lineno)
-
-        if a:action == 'add'
-            call setline(l:lineno, l:left . l:line . l:right)
-
-        elseif a:action == 'remove'
-            " Only remove if the line matches the comment pattern exactly
-            if l:line =~ '^' . l:left_esc . '.*' . l:right_esc . '$'
-                let l:uncommented = substitute(l:line, '^' . l:left_esc . '\(.*\)' . l:right_esc . '$', '\1', '')
-                call setline(l:lineno, l:uncommented)
-            endif
-        endif
-    endfor
-
-    " Restore window view
-    call winrestview(l:save_view)
-endfunction
-
 
 " Vanilla Surround Function
 function! Surround(char_start, char_end)

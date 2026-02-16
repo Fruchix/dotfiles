@@ -68,6 +68,27 @@ setup_siu()
     fi
 }
 
+install_vim_plugins()
+{
+    local vim_dir="$script_dir/config.d/vim"
+    local autoload_dir="$vim_dir/autoload"
+    local plug_file="$autoload_dir/plug.vim"
+    local vimrc_file="$vim_dir/vimrc"
+
+    echo "Installing Vim plugins."
+
+    if [[ ! -f "$plug_file" ]]; then
+        echo "Downloading vim-plug..."
+        curl -fLo "$plug_file" --create-dirs \
+            https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    fi
+
+    echo "Running PlugInstall."
+    vim -es -u "$vimrc_file" -i NONE -c "PlugInstall" -c "qa"
+
+    echo "Finished installing Vim pluggins."
+}
+
 run_setup_command() {
     local setup_cmd="$1"
 
@@ -92,3 +113,6 @@ run_setup_command setup_inputrc
 run_setup_command setup_bashrc
 run_setup_command setup_zshrc
 run_setup_command setup_siu
+
+echo ""
+install_vim_plugins
