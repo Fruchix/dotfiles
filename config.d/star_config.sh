@@ -6,15 +6,20 @@
 # _STAR_DATA_HOME
 # This configuration file is only for run-time configuration, and should be able to be quickly reloaded without breaking the installation.
 
-# alias s to stl and add its autocompletion
-if ! alias | grep "^s=stl$" &> /dev/null; then
-    alias s=stl
-    _s() { COMP_WORDS[0]="stl"; export COMP_WORDS; _complete_star; }
-    complete -F _s s
+# alias sl to stl and add its autocompletion
+if ! alias | grep "^sl=stl$" &> /dev/null; then
+
+    alias sl=stl
+    _sl() { COMP_WORDS[0]="stl"; export COMP_WORDS; _complete_star; }
+    complete -F _sl sl
 fi
 
 if ! alias | grep "^sconfig='star config'$" &> /dev/null; then
     alias sconfig='star config'
+fi
+
+if ! alias | grep "^s='star'$" &> /dev/null; then
+    alias s=star
 fi
 
 # Value: yes, no (default: yes)
@@ -22,8 +27,11 @@ export __STAR_ENABLE_ENVVARS=yes
 
 # - sta: star add
 # - unstar/strm: star remove
-# - stl: actually a function that serves as both star list (without arguments) AND star load (when an argument is provided)
+# - stl: star load (and star list when used without arguments and __STAR_ENABLE_LOADLISTS=yes)
 export __STAR_ENABLE_ALIASES=yes
+
+# Value: yes, no (default: yes)
+export __STAR_ENABLE_LOADLISTS=yes
 
 ### LIST OPTIONS ###
 # default: "<INDEX>:<BR><COLNAME>%f<COLRESET><BR>-><BR><COLPATH>%l<COLRESET>"
