@@ -62,7 +62,8 @@ setup_siu()
         git clone https://github.com/Fruchix/SIU.git
         ./SIU/install
 
-        source $HOME/.siu/siu_bashrc
+        # shellcheck disable=SC1091
+        source "$HOME/.siu/siu_bashrc"
         # $HOME/.siu/bin/siu install -M
         echo "[SIU] Install missing softwares using: siu install -M"
     fi
@@ -70,7 +71,7 @@ setup_siu()
 
 install_vim_plugins()
 {
-    local vim_dir="$script_dir/config.d/vim"
+    local vim_dir="$script_dir/config/vim"
     local autoload_dir="$vim_dir/autoload"
     local plug_file="$autoload_dir/plug.vim"
     local vimrc_file="$vim_dir/vimrc"

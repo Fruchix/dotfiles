@@ -16,7 +16,7 @@ unset commonrc_path
 
 
 ### XDG ###
-export XDG_CONFIG_HOME="${DOTFILES_HOME}/config.d/"
+export XDG_CONFIG_HOME="${DOTFILES_HOME}/config"
 
 
 ### Other exports ###
@@ -35,7 +35,7 @@ export VIMINIT='let $MYVIMRC="${XDG_CONFIG_HOME}/vim/vimrc" | source $MYVIMRC'
 
 # STAR configuration
 if command -v star >/dev/null 2>&1; then
-  export _STAR_CONFIG_FILE="$DOTFILES_HOME/config.d/star_config.sh"
+  export _STAR_CONFIG_FILE="$DOTFILES_HOME/config/star_config.sh"
   eval "$(command star init "$([[ -n $BASH_VERSION ]] && echo bash || echo zsh)")"
 fi
 
