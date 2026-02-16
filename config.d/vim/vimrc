@@ -329,9 +329,9 @@ set statusline=\ %{HasPaste()}%F%m%r%h\ %w\ \ CWD:\ %r%{getcwd()}%h\ \ \ Line:\ 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Editing mappings
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" A word is only composed of [a-zA-Z0-9], and characters with accents,
+" A word is only composed of [a-zA-Z0-9_], and characters with accents,
 " so moving by word stops on punctuation and other special characters
-set iskeyword=@,48-57,192-255
+set iskeyword=@,48-57,_,192-255
 
 " Display completion menu
 set completeopt=menu,menuone,noselect
