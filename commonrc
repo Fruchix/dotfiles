@@ -45,6 +45,9 @@ if [[ -z "$_DF_LOADED_MODULES" ]]; then
     # load default list of modules
     DFLOADER load general git math time archive files --quiet
 else
+    df_commonrc_loaded_modules=()
+    while IFS= read -r; do df_commonrc_loaded_modules+=("$REPLY") ; done < <(echo -e "${_DF_LOADED_MODULES//:/\\n}")
     # reload modules loaded in a parent shell
-    DFLOADER reload ${_DF_LOADED_MODULES//:/ } --quiet
+    DFLOADER reload "${df_commonrc_loaded_modules[@]}" --quiet
+    unset df_commonrc_loaded_modules
 fi
