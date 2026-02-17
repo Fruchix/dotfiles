@@ -26,6 +26,35 @@ DFLOADER() {
 
     local utils_dir="${DOTFILES_HOME}/utils"
 
+    # all other modes
+    local option_all=0
+    local option_quiet=0
+
+    local utils_positional_args=()
+    while [[ $# -gt 0 ]]; do
+        opt="$1";
+        shift;
+        case "$opt" in
+            -- ) break 2;;
+            - ) break 2;;
+            -a|--all )  option_all=1    ;;
+            -q|--quiet )option_quiet=1  ;;
+            -*)
+                echo "Invalid option: $opt" >&2
+                return 1
+                ;;
+            *)
+                utils_positional_args+=("$opt")
+            ;;
+        esac
+    done
+
+    # if mode is "show" or "list" and quiet option is enabled
+    # then there is nothing to show
+    [[ "$mode" == "show" && "$option_quiet" -eq 1  ]] && return 0
+    [[ "$mode" == "list" && "$option_quiet" -eq 1  ]] && return 0
+
+    # execute list mode now, as it does not need to process utils positional arguments
     if [[ "$mode" == "list" ]]; then
         local utils_list=()
 
@@ -54,29 +83,6 @@ DFLOADER() {
         return 0
     fi
 
-    # all other modes
-    local option_all=0
-    local option_quiet=0
-
-    local utils_positional_args=()
-    while [[ $# -gt 0 ]]; do
-        opt="$1";
-        shift;
-        case "$opt" in
-            -- ) break 2;;
-            - ) break 2;;
-            -a|--all )  option_all=1    ;;
-            -q|--quiet )option_quiet=1  ;;
-            -*)
-                echo "Invalid option: $opt" >&2
-                return 1
-                ;;
-            *)
-                utils_positional_args+=("$opt")
-            ;;
-        esac
-    done
-
     local utils_list=()
     if [[ "$option_all" -eq 1 ]]; then
         while IFS= read -r; do
@@ -84,6 +90,18 @@ DFLOADER() {
         done < <(find "${utils_dir}" -maxdepth 1 -type f -exec basename {} \;)
     else
         utils_list=("${utils_positional_args[@]}")
+    fi
+
+    # handle reload mode now
+    if [[ "$mode" == "reload" ]]; then
+        if [[ "$option_quiet" -eq 1 ]]; then
+            DFLOADER unload "${utils_list[@]}" --quiet
+            DFLOADER load "${utils_list[@]}" --quiet
+        else
+            DFLOADER unload "${utils_list[@]}"
+            DFLOADER load "${utils_list[@]}"
+        fi
+        return $?
     fi
 
     local util_name_clean
@@ -102,24 +120,25 @@ DFLOADER() {
 
         util_name_clean=$(command echo "$util_name" | command tr ' +-.!?():,;=' '_' | command tr --complement --delete "a-zA-Z0-9_" | command tr '[:upper:]' '[:lower:]')
 
-        func_names=()
-        while IFS= read -r; do
-            tmp_var="$REPLY"
+        if [[ "$option_quiet" -ne 1 ]]; then
+            func_names=()
+            while IFS= read -r; do
+                tmp_var="$REPLY"
 
-            # remove leading whitespace characters
-            tmp_var="${tmp_var#"${tmp_var%%[![:space:]]*}"}"
-            # remove trailing whitespace characters
-            tmp_var="${tmp_var%"${tmp_var##*[![:space:]]}"}"
+                # remove leading whitespace characters
+                tmp_var="${tmp_var#"${tmp_var%%[![:space:]]*}"}"
+                # remove trailing whitespace characters
+                tmp_var="${tmp_var%"${tmp_var##*[![:space:]]}"}"
 
-            # remove trailing "{} if present"
-            tmp_var="${tmp_var%"}"}"
-            tmp_var="${tmp_var%"{"}"
+                # remove trailing "{} if present"
+                tmp_var="${tmp_var%"}"}"
+                tmp_var="${tmp_var%"{"}"
 
-            # remove trailing "()" if present
-            tmp_var="${tmp_var%"()"}"
+                # remove trailing "()" if present
+                tmp_var="${tmp_var%"()"}"
 
-            func_names+=("$tmp_var")
-        done < <(awk '
+                func_names+=("$tmp_var")
+            done < <(awk '
 /^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{/ {
     sub(/^[[:space:]]*/, "");
     sub(/\(.*/, "");
@@ -132,14 +151,16 @@ DFLOADER() {
 }
 ' "${util_file}" 2>/dev/null)
 
-        alias_names=()
-        while IFS= read -r; do
-            alias_names+=("$REPLY")
-        done < <(awk '/^[[:space:]]*alias[[:space:]]+[A-Za-z_][A-Za-z0-9_]*=/ {
+            alias_names=()
+            while IFS= read -r; do
+                alias_names+=("$REPLY")
+            done < <(awk '/^[[:space:]]*alias[[:space:]]+[A-Za-z_][A-Za-z0-9_]*=/ {
     sub(/^[[:space:]]*alias[[:space:]]+/, "");
     sub(/=.*/, "");
     print;
 }' "${util_file}" 2>/dev/null)
+        fi
+
         case "$mode" in
             show)
                 echo "Utility: ${util_file}"
@@ -154,15 +175,6 @@ DFLOADER() {
                     for alias in "${alias_names[@]}"; do
                         echo " - $alias"
                     done
-                fi
-                ;;
-            reload)
-                if [[ "$option_quiet" -eq 1 ]]; then
-                    DFLOADER "unload" "$util_name" --quiet
-                    DFLOADER "load" "$util_name" --quiet
-                else
-                    DFLOADER "unload" "$util_name"
-                    DFLOADER "load" "$util_name"
                 fi
                 ;;
             load)
