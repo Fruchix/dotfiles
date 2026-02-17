@@ -173,3 +173,19 @@ function shlog_command() {
         shlog error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
     fi
 }
+
+
+function shlog_envvar() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: shlog_envvar <ENVVAR>"
+        return 0
+    fi
+    local envvar="$1"
+
+    if [[ -n "$BASH_VERSION" ]]; then
+        shlog info "$envvar=${!envvar}"
+    elif [[ -n "$ZSH_VERSION" ]]; then
+        shlog info "$envvar=${(P)envvar}"
+    fi
+}
+
