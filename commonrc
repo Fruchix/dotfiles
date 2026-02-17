@@ -41,4 +41,10 @@ fi
 source "${DOTFILES_HOME}/utils_loader.sh"
 
 ### Load other dotfiles files ###
-DFLOADER reload general git math time archive files --quiet > /dev/null
+if [[ -z "$_DF_LOADED_MODULES" ]]; then
+    # load default list of modules
+    DFLOADER load general git math time archive files --quiet
+else
+    # reload modules loaded in a parent shell
+    DFLOADER reload ${_DF_LOADED_MODULES//:/ } --quiet
+fi
