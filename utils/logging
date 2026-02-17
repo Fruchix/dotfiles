@@ -9,7 +9,7 @@
 #   $2: message to print
 #   $3: number of functions to ignore from the stack function. Used if the logging function is called from a "util" function,
 #       which is not the principal function where we want our log to come from.
-function sh_log()
+function shlog()
 {
     local log_level=$1
     local message="$2"
@@ -18,56 +18,56 @@ function sh_log()
     # variables used for logging
 
     # Colors
-    local _sh_log_esc_char="\e"
-    local _sh_log_color_red="${_sh_log_esc_char}[31m"
-    local _sh_log_color_green="${_sh_log_esc_char}[32m"
-    local _sh_log_color_yellow="${_sh_log_esc_char}[33m"
-    local _sh_log_color_blue="${_sh_log_esc_char}[34m"
-    local _sh_log_color_reset="${_sh_log_esc_char}[0m"
-    local _sh_log_bold="${_sh_log_esc_char}[1m"
+    local _shlog_esc_char="\e"
+    local _shlog_color_red="${_shlog_esc_char}[31m"
+    local _shlog_color_green="${_shlog_esc_char}[32m"
+    local _shlog_color_yellow="${_shlog_esc_char}[33m"
+    local _shlog_color_blue="${_shlog_esc_char}[34m"
+    local _shlog_color_reset="${_shlog_esc_char}[0m"
+    local _shlog_bold="${_shlog_esc_char}[1m"
 
     # Logging levels and their associated colors and names
-    local _sh_log_level_debug=0
-    local _sh_log_level_info=1
-    local _sh_log_level_warning=2
-    local _sh_log_level_error=3
+    local _shlog_level_debug=0
+    local _shlog_level_info=1
+    local _shlog_level_warning=2
+    local _shlog_level_error=3
 
-    local -A _sh_log_colors=(
-        [$_sh_log_level_debug]="${_sh_log_color_blue}"
-        [$_sh_log_level_info]="${_sh_log_color_green}"
-        [$_sh_log_level_warning]="${_sh_log_color_yellow}"
-        [$_sh_log_level_error]="${_sh_log_color_red}"
+    local -A _shlog_colors=(
+        [$_shlog_level_debug]="${_shlog_color_blue}"
+        [$_shlog_level_info]="${_shlog_color_green}"
+        [$_shlog_level_warning]="${_shlog_color_yellow}"
+        [$_shlog_level_error]="${_shlog_color_red}"
     )
 
-    local -A _sh_log_levels=(
-        [$_sh_log_level_debug]="DEBUG"
-        [$_sh_log_level_info]="INFO"
-        [$_sh_log_level_warning]="WARNING"
-        [$_sh_log_level_error]="ERROR"
+    local -A _shlog_levels=(
+        [$_shlog_level_debug]="DEBUG"
+        [$_shlog_level_info]="INFO"
+        [$_shlog_level_warning]="WARNING"
+        [$_shlog_level_error]="ERROR"
     )
 
-    local -A _sh_log_param=(
-        [debug]=$_sh_log_level_debug
-        [info]=$_sh_log_level_info
-        [warning]=$_sh_log_level_warning
-        [warn]=$_sh_log_level_warning
-        [error]=$_sh_log_level_error
-        [err]=$_sh_log_level_error
+    local -A _shlog_param=(
+        [debug]=$_shlog_level_debug
+        [info]=$_shlog_level_info
+        [warning]=$_shlog_level_warning
+        [warn]=$_shlog_level_warning
+        [error]=$_shlog_level_error
+        [err]=$_shlog_level_error
     )
 
     # Variables
     # minimum level for each log message to be logged, by default 1 (INFO).
-    local sh_log_level=${SH_LOG_LEVEL:-1}
+    local shlog_level=${SHLOG_LEVEL:-1}
 
     # log file where to save the logged messages (in addition to displaying them in terminal)
     # Default: no log file
-    local sh_log_file=${SH_LOG_FILE:-}
+    local shlog_file=${SHLOG_FILE:-}
 
     # FUNCNAME only works under bash
-    # if this logging function is called from a sh_log_(debug|info|warning|error) function,
+    # if this logging function is called from a shlog_(debug|info|warning|error) function,
     # then the calling function is two functions away in the calling stack
     # else the calling function is one function away in the calling stack
-    if [[ "${FUNCNAME[*]}" =~ "sh_log_" ]]; then
+    if [[ "${FUNCNAME[*]}" =~ "shlog_" ]]; then
         local context="${FUNCNAME[(( 2 + $nb_func_ignore))]}"
     else
         local context="${FUNCNAME[(( 1 + $nb_func_ignore ))]}"
@@ -75,69 +75,69 @@ function sh_log()
 
     # convert log_level to the corresponding integer if a string was passed
     if [[ "${#log_level}" -ne 1 ]]; then
-        log_level="${_sh_log_param[$log_level]}"
+        log_level="${_shlog_param[$log_level]}"
 
         # if this logging level does not exist, then log an ERROR explaining the problem
         if [[ -z "$log_level" ]]; then
-            message="Bad parameter to sh_log: \"$1\" is not an existing log level. Log message: \"$message\"."
+            message="Bad parameter to shlog: \"$1\" is not an existing log level. Log message: \"$message\"."
             log_level=3
         fi
     fi
 
-    # only display logs that have a higher/equal level than/to sh_log_level
-    if [[ ${log_level} -lt ${sh_log_level} ]]; then
+    # only display logs that have a higher/equal level than/to shlog_level
+    if [[ ${log_level} -lt ${shlog_level} ]]; then
         return
     fi
 
-    local level_name="${_sh_log_levels[$log_level]}"
+    local level_name="${_shlog_levels[$log_level]}"
     # all log level (names) have the same size for a better display
     while [[ ${#level_name} -lt 7 ]]; do
             level_name="${level_name} "
     done
-    local color="${_sh_log_colors[$log_level]}"
+    local color="${_shlog_colors[$log_level]}"
 
     local timestamp
     timestamp="$(date -Is)"
-    local log_string="[${timestamp}][${color}${level_name}${_sh_log_color_reset}]"
+    local log_string="[${timestamp}][${color}${level_name}${_shlog_color_reset}]"
     if [[ -n "$context" ]]; then
-        log_string="$log_string ${_sh_log_bold}${context}${_sh_log_color_reset}:"
+        log_string="$log_string ${_shlog_bold}${context}${_shlog_color_reset}:"
     fi
     log_string="$log_string ${message}"
-    if [[ -z "${sh_log_file}" ]]; then
+    if [[ -z "${shlog_file}" ]]; then
         builtin echo -e "${log_string}"
     else
-        builtin echo -e "${log_string}" | tee -a "${sh_log_file}"
+        builtin echo -e "${log_string}" | tee -a "${shlog_file}"
     fi
 }
 
-# Log a message using sh_log, with log level debug
-function sh_log_debug()
+# Log a message using shlog, with log level debug
+function shlog_debug()
 {
-    sh_log debug "$@"
+    shlog debug "$@"
 }
 
-# Log a message using sh_log, with log level info
-function sh_log_info()
+# Log a message using shlog, with log level info
+function shlog_info()
 {
-    sh_log info "$@"
+    shlog info "$@"
 }
 
-# Log a message using sh_log, with log level warning
-function sh_log_warning()
+# Log a message using shlog, with log level warning
+function shlog_warning()
 {
-    sh_log warning "$@"
+    shlog warning "$@"
 }
 
-# Log a message using sh_log, with log level error
-function sh_log_error()
+# Log a message using shlog, with log level error
+function shlog_error()
 {
-    sh_log error "$@"
+    shlog error "$@"
 }
 
-function sh_log_command() {
+function shlog_command() {
     local cmd=("$@")
 
-    sh_log debug "Running command: '${cmd[*]}'"
+    shlog debug "Running command: '${cmd[*]}'"
     
     local t_start="$EPOCHREALTIME"
     "${cmd[@]}" 
@@ -145,8 +145,8 @@ function sh_log_command() {
     local t_end="$EPOCHREALTIME"
 
     if [[ "$ret" -eq 0 ]]; then
-        sh_log info "Command '${cmd[*]}' succeeded in $((t_end - t_start))s"
+        shlog info "Command '${cmd[*]}' succeeded in $((t_end - t_start))s"
     else
-        sh_log_error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
+        shlog_error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
     fi
 }
