@@ -397,10 +397,14 @@ inoremap <M-Left>  <C-o>b
 inoremap <M-Right> <C-o>w
 vnoremap <M-Left>  b
 vnoremap <M-Right> w
-" Iterm2 sends alt+right as Esc+f terminals 
+" Iterm2 sends alt+right as Esc+f
 nnoremap <Esc>f w
 inoremap <Esc>f <C-o>w
 vnoremap <Esc>f w
+" Iterm2 sends alt+left as Esc+b
+nnoremap <Esc>b b
+inoremap <Esc>b <C-o>b
+vnoremap <Esc>b b
 
 " Use Tab and  Maj+Tab to indent and un-indent
 nnoremap <Tab> >>
