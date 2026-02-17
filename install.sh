@@ -27,9 +27,9 @@ setup_bashrc()
     if ! grep -q Fruchix/dotfiles:install.sh "$HOME/.bashrc"; then
         cat << EOF >> "$HOME/.bashrc"
 
-### Automaticaly added by Fruchix/dotfiles:install.sh ###
-source $script_dir/bashrc   ### Automaticaly added by Fruchix/dotfiles:install.sh
-### Automaticaly added by Fruchix/dotfiles:install.sh ###
+### Automatically added by Fruchix/dotfiles:install.sh ###
+source $script_dir/bashrc   ### Automatically added by Fruchix/dotfiles:install.sh
+### Automatically added by Fruchix/dotfiles:install.sh ###
 
 EOF
         echo "Added sourcing of '$script_dir/bashrc' in '$HOME/.bashrc'"
@@ -41,9 +41,9 @@ setup_zshrc()
     if ! grep -q Fruchix/dotfiles:install.sh "$HOME/.zshrc"; then
         cat << EOF >> "$HOME/.zshrc"
 
-### Automaticaly added by Fruchix/dotfiles:install.sh ###
-source $script_dir/zshrc   ### Automaticaly added by Fruchix/dotfiles:install.sh
-### Automaticaly added by Fruchix/dotfiles:install.sh ###
+### Automatically added by Fruchix/dotfiles:install.sh ###
+source $script_dir/zshrc   ### Automatically added by Fruchix/dotfiles:install.sh
+### Automatically added by Fruchix/dotfiles:install.sh ###
 
 EOF
         echo "Added sourcing of '$script_dir/zshrc' in '$HOME/.zshrc'"
