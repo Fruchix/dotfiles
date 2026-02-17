@@ -133,3 +133,20 @@ function sh_log_error()
 {
     sh_log error "$@"
 }
+
+function sh_log_command() {
+    local cmd=("$@")
+
+    sh_log debug "Running command: '${cmd[*]}'"
+    
+    local t_start="$EPOCHREALTIME"
+    "${cmd[@]}" 
+    local ret="$?"
+    local t_end="$EPOCHREALTIME"
+
+    if [[ "$ret" -eq 0 ]]; then
+        sh_log info "Command '${cmd[*]}' succeeded in $((t_end - t_start))s"
+    else
+        sh_log_error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
+    fi
+}
