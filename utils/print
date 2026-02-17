@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+function PRINT_ENVVAR() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: PRINT_ENVVAR <ENVVAR>"
+        return 1
+    fi
+    local envvar="$1"
+
+    if [[ -n "$BASH_VERSION" ]]; then
+        builtin echo "$envvar=${!envvar}"
+    elif [[ -n "$ZSH_VERSION" ]]; then
+        builtin echo "$envvar=${(P)envvar}"
+    fi
+}
+
+_complete_PRINT_ENVVAR() {
+	local cur_word="${COMP_WORDS[COMP_CWORD]}"
+    local envvars
+    envvars="$(env | cut -d"=" -f1)"
+
+    COMPREPLY=($(compgen -W "${envvars}" -- "${cur_word}"))
+}
+
+complete -F _complete_PRINT_ENVVAR -o nospace PRINT_ENVVAR
+
+function PRINT_ARRAY() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: PRINT_ARRAY <ARRAY_NAME>"
+        return 1
+    fi
+
+    if [[ -n "$ZSH_VERSION" ]]; then
+        builtin echo "This function cannot dump arrays under Zsh. Use Bash."
+        return 2
+    fi
+
+    if [[ -n "$BASH_VERSION" ]]; then
+        local -n array_name="$1"
+        local value
+        for value in "${array_name[@]}"; do
+            builtin echo "$value"
+        done
+    fi
+}
+
+function PRINT_ARRAY_WITH_INDEX() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: PRINT_ARRAY_WITH_INDEX <ARRAY_NAME>"
+        return 1
+    fi
+
+    if [[ -n "$ZSH_VERSION" ]]; then
+        builtin echo "This function cannot dump arrays under Zsh. Use Bash."
+        return 2
+    fi
+
+    if [[ -n "$BASH_VERSION" ]]; then
+        local -n array_name="$1"
+        local i
+        for i in "${!array_name[@]}"; do
+            builtin echo "$i=${array_name[$i]}"
+        done
+    fi
+}
+
+function PRINT_ASSOCIATIVE_ARRAY() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: PRINT_ASSOCIATIVE_ARRAY <ARRAY_NAME>"
+        return 1
+    fi
+
+    if [[ -n "$ZSH_VERSION" ]]; then
+        builtin echo "This function cannot dump associative arrays under Zsh. Use Bash."
+        return 2
+    fi
+
+    local -n associative_array_ref="$1"
+    local key
+
+    if [[ -n "$BASH_VERSION" ]]; then
+        for key in "${!associative_array_ref[@]}"; do
+            echo "$key=${associative_array_ref[$key]}"
+        done
+    fi
+}
