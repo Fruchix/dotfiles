@@ -111,6 +111,13 @@ DFLOADER() {
             # remove trailing whitespace characters
             tmp_var="${tmp_var%"${tmp_var##*[![:space:]]}"}"
 
+            # remove trailing "{} if present"
+            tmp_var="${tmp_var%"}"}"
+            tmp_var="${tmp_var%"{"}"
+
+            # remove trailing "()" if present
+            tmp_var="${tmp_var%"()"}"
+
             func_names+=("$tmp_var")
         done < <(awk '
 /^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{/ {
