@@ -135,18 +135,41 @@ function shlog_error()
 }
 
 function shlog_command() {
+    if [[ "$#" -lt 1 ]]; then
+        builtin echo "Usage: shlog_command [--quiet|--redirects REDIRECTS] COMMAND"
+    fi
+
+    local quiet=0
+    local redirect=0
+    local redirects=""
+    if [[ "$1" == "--quiet" || "$1" == "-q" ]]; then
+        quiet=1
+        builtin shift
+    fi
+    if [[ "$1" == "--redirects" || "$1" == "-r" ]]; then
+        redirect=1
+        builtin shift
+        redirects="$1"
+        builtin shift
+    fi
     local cmd=("$@")
 
     shlog debug "Running command: '${cmd[*]}'"
     
     local t_start="$EPOCHREALTIME"
-    "${cmd[@]}" 
+    if [[ "$quiet" -eq 1 ]]; then
+        "${cmd[@]}" &> /dev/null
+    elif [[ "$redirect" -eq 1 ]]; then
+        builtin eval "${cmd[@]}" $redirects
+    else
+        "${cmd[@]}"
+    fi
     local ret="$?"
     local t_end="$EPOCHREALTIME"
 
     if [[ "$ret" -eq 0 ]]; then
         shlog info "Command '${cmd[*]}' succeeded in $((t_end - t_start))s"
     else
-        shlog_error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
+        shlog error "Command '${cmd[*]}' failed in $((t_end - t_start))s"
     fi
 }
