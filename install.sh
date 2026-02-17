@@ -24,10 +24,7 @@ setup_inputrc()
 
 setup_bashrc()
 {
-    if grep -q Fruchix/dotfiles:install.sh "$HOME/.bashrc"; then
-        echo -e "File '$HOME/.bashrc' is already sourcing Fruchix's dotfiles with the following lines:\n"
-        grep --color=always Fruchix/dotfiles:install.sh "$HOME/.bashrc"
-    else
+    if ! grep -q Fruchix/dotfiles:install.sh "$HOME/.bashrc"; then
         cat << EOF >> "$HOME/.bashrc"
 
 ### Automaticaly added by Fruchix/dotfiles:install.sh ###
@@ -41,10 +38,7 @@ EOF
 
 setup_zshrc()
 {
-    if grep -q Fruchix/dotfiles:install.sh "$HOME/.zshrc"; then
-        echo -e "File '$HOME/.zshrc' is already sourcing Fruchix's dotfiles with the following lines:\n"
-        grep --color=always Fruchix/dotfiles:install.sh "$HOME/.zshrc"
-    else
+    if ! grep -q Fruchix/dotfiles:install.sh "$HOME/.zshrc"; then
         cat << EOF >> "$HOME/.zshrc"
 
 ### Automaticaly added by Fruchix/dotfiles:install.sh ###
@@ -107,13 +101,14 @@ run_setup_command() {
             *) echo "Not a valid answer.";;
         esac
     done
-    # echo ""
 }
 
-run_setup_command setup_inputrc
-run_setup_command setup_bashrc
+setup_inputrc
+setup_bashrc
 run_setup_command setup_zshrc
 run_setup_command setup_siu
+
+. "${script_dir}/commonrc"
 
 echo ""
 install_vim_plugins
