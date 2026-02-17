@@ -217,7 +217,7 @@ DFLOADER() {
                 fi
                 if [[ -n "${alias_names[*]}" ]]; then
                     for alias in "${alias_names[@]}"; do
-                        unalias "$alias"
+                        unalias "$alias" &> /dev/null
                     done
                 fi
                 _DF_LOADED_MODULES=":${_DF_LOADED_MODULES}:"
