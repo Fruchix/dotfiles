@@ -37,7 +37,7 @@ filetype indent on
 set autoread
 au FocusGained,BufEnter * silent! checktime
 
-" Leader definition
+" Leader definition: use spacebar
 nnoremap <SPACE> <Nop>
 let mapleader=" "
 
@@ -73,10 +73,32 @@ Plug 'preservim/nerdtree'
 Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'   " Use language servers
+Plug 'liuchengxu/vim-which-key' " show keybindings to help with key combinations
 
 " Plug 'vim-scripts/AutoComplPop' " Automatically open the completion menu when typing
 
 call plug#end()
+
+
+""" Which key plugin configuration
+" Time in milliseconds before the Which-Key menu pops up
+" Not a which-key specific variable, but here we set it specifically for which key
+set timeoutlen=100
+" Trigger Which-Key when your leader key is pressed ASSUMING SPACEBAR IS THE LEADER
+nnoremap <silent> <leader> :<c-u>WhichKey '<Space>'<CR>
+
+" Initialize and register the Which-Key dictionary
+" ASSUMING SPACEBAR IS THE LEADER
+let g:which_key_map =  {}
+call which_key#register('<Space>', "g:which_key_map")
+" It will be populated in further sections
+
+" Only show mappings explicitly defined in my g:which_key_map
+let g:which_key_ignore_outside_mappings = 1
+
+" Close which key leader menu, ASSUMING SPACEBAR IS THE LEADER
+nnoremap <leader><leader> <Esc>
+let g:which_key_map[' '] = 'close menu'
 
 """ Theme plugin
 try
@@ -92,6 +114,7 @@ let g:lightline = {'colorscheme': 'catppuccin_frappe'}
 
 
 """ NERDTree plugin
+let g:which_key_map.e = "Explorer"
 nnoremap <leader>e :NERDTreeToggle<CR>
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | call feedkeys(":quit\<CR>:\<BS>") | endif
@@ -119,6 +142,7 @@ let g:gitgutter_sign_modified_removed = '▋'
 
 
 """ Commentary plugin
+let g:which_key_map.c = "Comment"
 vnoremap <leader>c  <Plug>Commentary
 nnoremap <leader>c <Plug>CommentaryLine
 
@@ -312,6 +336,57 @@ map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
 
+let g:which_key_map.arrows = "Navigate windows"
+
+" Navigate windows using Leader + Arrow Keys
+nnoremap <leader><Up> <C-w>k
+nnoremap <leader><Down> <C-w>j
+nnoremap <leader><Left> <C-w>h
+nnoremap <leader><Right> <C-w>l
+
+" Split window
+nnoremap <leader>sv :vsplit<CR>
+nnoremap <leader>sh :split<CR>
+" Close the current split pane safely
+nnoremap <leader>sc :close<CR>
+" Equalize split sizes (fixes messy window proportions)
+nnoremap <leader>s= <C-w>=
+" Swap the current split with the next one
+nnoremap <leader>sx <C-w>x
+
+" Create a which key menu for leader+s
+let g:which_key_map.s = {
+    \ 'name' : '+Split' ,
+    \ 'v' : 'vertical split' ,
+    \ 'h' : 'horizontal split' ,
+    \ 'c' : 'close split' ,
+    \ '=' : 'equalize splits' ,
+    \ 'x' : 'swap splits' ,
+    \ }
+
+" Useful mappings for managing tabs
+map <leader>tn :tabnew<cr>
+map <leader>tc :tabclose<cr>
+
+let g:which_key_map.t = {
+    \ 'name' : '+Tabs' ,
+    \ 'n' : 'New tab' ,
+    \ 'c' : 'Close tab' ,
+    \ }
+
+" Navigating through tabs
+let g:which_key_map['<Tab>'] = [ ':tabnext', 'Cycle tabs' ]
+nnoremap <leader><S-Tab> :tabprevious<cr>
+nnoremap <leader>& 1gt
+nnoremap <leader>é 2gt
+nnoremap <leader>" 3gt
+nnoremap <leader>' 4gt
+nnoremap <leader>( 5gt
+nnoremap <leader>§ 6gt
+nnoremap <leader>è 7gt
+nnoremap <leader>! 8gt
+nnoremap <leader>ç 9gt
+
 " Close the current buffer
 " map <leader>bd :Bclose<cr>:tabclose<cr>gT
 
@@ -321,30 +396,10 @@ map <C-l> <C-W>l
 " map <leader>l :bnext<cr>
 " map <leader>h :bprevious<cr>
 
-" Useful mappings for managing tabs
-map <leader>tn :tabnew<cr>
-map <leader>to :tabonly<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-
-" Navigating throught tabs
-noremap <leader><Right> :tabnext<cr>
-noremap <leader><Left> :tabprevious<cr>
-noremap <leader>& 1gt
-noremap <leader>é 2gt
-noremap <leader>" 3gt
-noremap <leader>' 4gt
-noremap <leader>( 5gt
-noremap <leader>§ 6gt
-noremap <leader>è 7gt
-noremap <leader>! 8gt
-noremap <leader>ç 9gt
-
 " Let 'tl' toggle between this and the last accessed tab
 " let g:lasttab = 1
-" nmap <leader>tl :exe "tabn ".g:lasttab<CR>
+" noremap <leader>j :exe "tabn ".g:lasttab<CR>
 " au TabLeave * let g:lasttab = tabpagenr()
-
 
 " Opens a new tab with the current buffer's path
 " Super useful when editing files in the same directory
@@ -421,6 +476,7 @@ inoremap <M-S-Left> <Esc>vb<Left>
 inoremap <M-S-Right> <Esc>vw<Right>
 
 " Disable hightlight using leader + Escape
+let g:which_key_map.h = "Disable highlight"
 nnoremap <silent> <leader>h :nohlsearch<CR>
 
 " Custom search and replace bidings
@@ -428,6 +484,7 @@ nnoremap <silent> <leader>h :nohlsearch<CR>
 " vnoremap <silent> / :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 vnoremap <silent> / y/\V<C-R>=escape(@", '/\')<CR><CR>
 " Pressing leader + r triggers replacement of all those patterns
+let g:which_key_map.r = "Replace selection"
 vnoremap <leader>r :<C-u>call VisualSelection('replace', '')<CR>
 
 " Use alt+j/k to move lines up and down
@@ -462,9 +519,7 @@ nnoremap <Esc>b b
 inoremap <Esc>b <C-o>b
 vnoremap <Esc>b b
 
-" Use Tab and  Maj+Tab to indent and un-indent
-nnoremap <Tab> >>
-nnoremap <S-Tab> <<
+" Use Tab and  Maj+Tab to indent and un-indent, in visual mode
 vnoremap <Tab> >gv
 vnoremap <S-Tab> <gv
 
@@ -501,14 +556,14 @@ endif
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Spell checking
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" Pressing ,ss will toggle and untoggle spell checking
-map <leader>ss :setlocal spell!<cr>
+" " Pressing ,ss will toggle and untoggle spell checking
+" map <leader>ss :setlocal spell!<cr>
 
-" Shortcuts using <leader>
-map <leader>sn ]s
-map <leader>sp [s
-map <leader>sa zg
-map <leader>s? z=
+" " Shortcuts using <leader>
+" map <leader>sn ]s
+" map <leader>sp [s
+" map <leader>sa zg
+" map <leader>s? z=
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
