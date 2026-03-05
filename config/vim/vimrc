@@ -447,8 +447,16 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " Hack to trigger autocompletion when typing
 function! OpenCompletion()
+    " Open menu if not open and we are typing a letter
     if !pumvisible() && ((v:char >= 'a' && v:char <= 'z') || (v:char >= 'A' && v:char <= 'Z'))
-        call feedkeys("\<C-x>\<C-o>", "n")
+        " Try to use already set omnifunc (will be set by lsp if file's language is supported)
+        " else fallback to basic keyword completion
+        if &omnifunc != ''
+            call feedkeys("\<C-x>\<C-o>", "n")
+        else
+            call feedkeys("\<C-x>\<C-n>", "n")
+        endif
+
     endif
 endfunction
 autocmd InsertCharPre * call OpenCompletion()
