@@ -1,0 +1,18 @@
+alias k='kubectl'
+
+alias kl='kubectl logs'
+alias kd='kubectl describe'
+alias krm='kubectl delete'
+
+alias kg='kubectl get'
+
+alias kgno='kubectl get nodes'
+alias kgpo='kubectl get pods'
+alias kgns='kubectl get namespaces'
+alias kgpvc='kubectl get pvc'
+alias kgpv='kubectl get pv'
+alias kgdep='kubectl get deployment'
+alias kgsvc='kubectl get service'
+alias kging='kubectl get ingress'
+
+alias kns='kubectl config set-context --current --namespace '
