@@ -1,0 +1,9 @@
+# omz config: $ZSH should point to omz installation
+if [[ -f "$ZSH"/oh-my-zsh.sh ]]; then
+   ZSH_THEME="robbyrussell"
+
+   zstyle ':omz:update' mode auto
+
+   plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+   . "$ZSH"/oh-my-zsh.sh
+fi
