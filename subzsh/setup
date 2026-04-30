@@ -1,0 +1,13 @@
+setup_omz_plugins() {
+    if [[ -z "${ZSH}" ]]; then
+        return
+    fi
+
+    mkdir -p "$ZSH"/custom/plugins/
+
+    [[ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions ]] && git clone https://github.com/zsh-users/zsh-autosuggestions "$ZSH"/custom/plugins/zsh-autosuggestions
+    [[ ! -d "$ZSH"/custom/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH"/custom/plugins/zsh-syntax-highlighting
+}
+
+setup_omz_plugins
+unset -f setup_omz_plugins
