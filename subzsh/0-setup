@@ -9,5 +9,17 @@ setup_omz_plugins() {
     [[ ! -d "$ZSH"/custom/plugins/zsh-syntax-highlighting ]] && git clone https://github.com/zsh-users/zsh-syntax-highlighting "$ZSH"/custom/plugins/zsh-syntax-highlighting
 }
 
+setup_omz_themes() {
+    if [[ -z "${ZSH}" ]]; then
+        return
+    fi
+
+    mkdir -p "$ZSH"/custom/themes/
+
+    [[ ! -d "$ZSH"/custom/themes/catppuccin-zsh ]] && git clone https://github.com/JannoTjarks/catppuccin-zsh.git "$ZSH"/custom/themes/catppuccin-zsh
+}
+
 setup_omz_plugins
+setup_omz_themes
 unset -f setup_omz_plugins
+unset -f setup_omz_themes
