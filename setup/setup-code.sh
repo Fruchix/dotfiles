@@ -14,7 +14,6 @@ install_extensions() {
         "mathematic.vscode-latex"
         "james-yu.latex-workshop"
         "github.copilot-chat"
-        "github.copilot-chat"
     )
 
     echo "Installing extensions:"
