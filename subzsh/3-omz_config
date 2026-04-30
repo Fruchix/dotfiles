@@ -5,5 +5,11 @@ if [[ -f "$ZSH"/oh-my-zsh.sh ]]; then
    zstyle ':omz:update' mode auto
 
    plugins=(git zsh-syntax-highlighting zsh-autosuggestions)
+
+   ZSH_THEME="catppuccin"
+   CATPPUCCIN_FLAVOR="frappe" # Required! Options: mocha, flappe, macchiato, latte
+   CATPPUCCIN_SHOW_TIME=false  # Optional! If set to true, this will add the current time to the prompt.
+   CATPPUCCIN_SHOW_HOSTNAME="ssh"  # Optional! Options: never, always, ssh
+
    . "$ZSH"/oh-my-zsh.sh
 fi
