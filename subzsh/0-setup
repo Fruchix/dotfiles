@@ -16,7 +16,11 @@ setup_omz_themes() {
 
     mkdir -p "$ZSH"/custom/themes/
 
-    [[ ! -d "$ZSH"/custom/themes/catppuccin-zsh ]] && git clone https://github.com/JannoTjarks/catppuccin-zsh.git "$ZSH"/custom/themes/catppuccin-zsh
+    if [[ ! -d "$ZSH"/custom/themes/catppuccin-flavors ]]; then
+        git clone https://github.com/JannoTjarks/catppuccin-zsh.git "$ZSH"/custom/themes/catppuccin-flavors
+        command rm "$ZSH"/custom/themes/catppuccin.zsh-theme
+        ln -s "$ZSH"/custom/themes/catppuccin-flavors/catppuccin.zsh-theme "$ZSH"/custom/themes/catppuccin.zsh-theme
+    fi
 }
 
 setup_omz_plugins
