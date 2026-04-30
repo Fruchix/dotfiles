@@ -1,0 +1,5 @@
+HIST_STAMPS="yyyy-mm-dd"
+
+[ -z "$HISTFILE" ] && HISTFILE="$HOME/.zsh_history"
+[ "$HISTSIZE" -lt 1000000 ] && HISTSIZE=1000000
+[ "$SAVEHIST" -lt 1000000 ] && SAVEHIST=1000000
