@@ -64,6 +64,18 @@ function PRINT_ARRAY_WITH_INDEX() {
     fi
 }
 
+_complete_indexed_arrays() {
+    # Get the word currently being typed
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    # compgen -A arrayvar gets the list, and '-- "$cur"' filters it
+    # based on what the user has already typed
+    COMPREPLY=( $(compgen -A arrayvar -- "$cur") )
+}
+
+complete -F _complete_indexed_arrays PRINT_ARRAY
+complete -F _complete_indexed_arrays PRINT_ARRAY_WITH_INDEX
+
 function PRINT_ASSOCIATIVE_ARRAY() {
     if [[ "$#" -lt 1 ]]; then
         builtin echo "Usage: PRINT_ASSOCIATIVE_ARRAY <ARRAY_NAME>"
@@ -84,3 +96,16 @@ function PRINT_ASSOCIATIVE_ARRAY() {
         done
     fi
 }
+
+_complete_assoc_arrays() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
+
+    # 1. Fetch the raw list of associative array names
+    # (Redirecting stderr to /dev/null hides errors if no assoc arrays exist)
+    local assoc_list=$(declare -Ap 2>/dev/null | awk '{print $3}' | cut -d= -f1)
+
+    # 2. Use compgen -W (wordlist) to filter the custom list against the current word
+    COMPREPLY=( $(compgen -W "$assoc_list" -- "$cur") )
+}
+
+complete -F _complete_assoc_arrays PRINT_ASSOCIATIVE_ARRAY
