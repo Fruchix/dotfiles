@@ -87,9 +87,8 @@ cd() {
     if [[ -f "$1" ]]; then
         cd "$(dirname "$1")"
     else
-        builtin cd "$@"
         # uses alias ll defined above
-        ll
+        builtin cd "$@" && ll
     fi
 }
 
