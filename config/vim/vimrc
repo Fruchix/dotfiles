@@ -74,6 +74,7 @@ Plug 'tpope/vim-commentary'
 Plug 'dense-analysis/ale'
 Plug 'prabirshrestha/vim-lsp'   " Use language servers
 Plug 'liuchengxu/vim-which-key' " show keybindings to help with key combinations
+Plug 'mg979/vim-visual-multi', {'branch': 'master'} " Multiline selection and edits like in VS Code
 
 " Better word navigation
 Plug 'chaoren/vim-wordmotion'
@@ -200,6 +201,16 @@ let g:lsp_documentation_float = 1
 let g:lsp_completion_documentation_enabled = 1
 
 
+""" vim-visual-multi plugin
+" Initialize the dictionary
+let g:VM_maps = {}
+
+" Visual mode: Select the exact text you currently have highlighted
+let g:VM_maps['Find Subword Under'] = '<C-d>'
+
+" Normal mode (Optional but recommended): Select the word currently under the cursor
+let g:VM_maps['Find Under'] = '<C-d>'
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Interface
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -237,6 +248,7 @@ endif
 
 " Configure backspace so it acts as it should act
 set backspace=eol,start,indent
+fixdel
 set whichwrap+=<,>,h,l
 
 " Search options
@@ -550,6 +562,9 @@ xnoremap <silent> < :call Surround('<', '>')<CR>
 nnoremap <M-d> dw
 inoremap <M-d> <C-o>dw
 
+" Delete previous word with Meta+
+nnoremap <M-w> <C-w>
+inoremap <M-w> <C-w>
 
 " Remap VIM 0 to first non-blank character
 map 0 ^
