@@ -139,12 +139,12 @@ DFLOADER() {
 
                 func_names+=("$tmp_var")
             done < <(awk '
-/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_]*[[:space:]]*\(\)[[:space:]]*\{/ {
+/^[[:space:]]*[a-zA-Z_][a-zA-Z0-9_-:]*[[:space:]]*\(\)[[:space:]]*\{/ {
     sub(/^[[:space:]]*/, "");
     sub(/\(.*/, "");
     print;
 }
-/^[[:space:]]*function[[:space:]]+[a-zA-Z_][a-zA-Z0-9_]*/ {
+/^[[:space:]]*function[[:space:]]+[a-zA-Z_][a-zA-Z0-9_-:]*/ {
     sub(/^[[:space:]]*function[[:space:]]+/, "");
     sub(/[[:space:]].*/, "");
     print;
@@ -154,7 +154,7 @@ DFLOADER() {
             alias_names=()
             while IFS= read -r; do
                 alias_names+=("$REPLY")
-            done < <(awk '/^[[:space:]]*alias[[:space:]]+[A-Za-z_][A-Za-z0-9_]*=/ {
+            done < <(awk '/^[[:space:]]*alias[[:space:]]+[A-Za-z_][A-Za-z0-9_-]*=/ {
     sub(/^[[:space:]]*alias[[:space:]]+/, "");
     sub(/=.*/, "");
     print;
