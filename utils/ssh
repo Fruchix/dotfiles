@@ -1,0 +1,27 @@
+_ssh_agent_start() {
+    local ssh_env="${SSH_ENV:-$HOME/.ssh/env}"
+    echo -n "Initialising new SSH agent..."
+    ssh-agent | sed 's/^echo/#echo/' > "${ssh_env}"
+    echo "OK"
+    chmod 600 "${ssh_env}"
+    . "${ssh_env}" > /dev/null
+}
+
+_ssh_agent_connect() {
+    local ssh_env="${SSH_ENV:-$HOME/.ssh/env}"
+    echo -n "Connecting to existing SSH agent..."
+    if [[ -f "${ssh_env}" ]]; then
+        . "${ssh_env}" > /dev/null
+        if ps -ef | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn} ${SSH_AGENT_PID} | grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn} ssh-agent$ > /dev/null; then
+            echo "OK"
+        else
+            echo "KO"
+            _ssh_agent_start
+        fi
+    else
+        echo "KO"
+        _ssh_agent_start
+    fi
+}
+
+alias ssh-add='command ssh-add &> /dev/null; [[ "$?" -eq 2 ]] && _ssh_agent_connect; command ssh-add'
