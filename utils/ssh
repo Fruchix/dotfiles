@@ -24,6 +24,43 @@ _ssh_agent_connect() {
     fi
 }
 
+ssh-init() {
+    command ssh-add -l &> /dev/null
+    local agent_status=$?
+
+    # if there is no ssh agent connected in this terminal, then try to connect to one
+    if [[ $agent_status -eq 2 ]]; then
+        _ssh_agent_connect
+    fi
+
+    # get current loaded keys
+    local loaded_keys=()
+    while IFS= read -r; do
+        loaded_keys+=("$REPLY")
+    done < <(command ssh-add -L)
+
+    # for each ssh key file that corresponds to a key that is not loaded, then load the key
+    local ssh_key_file
+    local cur_loaded_key
+    local is_ssh_key_file_loaded
+    for ssh_key_file in $HOME/.ssh/*.pub; do
+        if [[ ! -f "$ssh_key_file" ]]; then
+            continue
+        fi
+
+        is_ssh_key_file_loaded=0
+        for cur_loaded_key in "${loaded_keys[@]}"; do
+            if [[ "$cur_loaded_key" == "$(cat "$ssh_key_file")" ]]; then
+                is_ssh_key_file_loaded=1
+            fi
+        done
+
+        if [[ "$is_ssh_key_file_loaded" -eq 0 ]]; then
+            command ssh-add "${ssh_key_file%.pub}"
+        fi
+    done 2>/dev/null
+}
+
 ssh-add() {
     command ssh-add -l &> /dev/null
 
@@ -38,32 +75,8 @@ ssh() {
     command ssh-add -l &> /dev/null
     local agent_status=$?
 
-    if [[ $agent_status -eq 2 ]]; then
-        _ssh_agent_connect
-
-        command ssh-add -l &> /dev/null
-        agent_status=$?
-    fi
-
-    local pubkey
-    local privkey
-    if [[ $agent_status -eq 1 ]]; then
-        echo "SSH agent is empty. Checking for available keys..."
-
-        for pubkey in "$HOME"/.ssh/*.pub; do
-            [[ -e "$pubkey" ]] || continue
-
-            privkey="${pubkey%.pub}"
-
-            if [[ -f "$privkey" ]]; then
-                echo -n "Do you want to add $privkey? [y/N] "
-                read -r
-                # If the user types y, Y, yes, or YES, add the key
-                if [[ "$REPLY" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-                    command ssh-add "$privkey"
-                fi
-            fi
-        done
+    if [[ $agent_status -ne 0 ]]; then
+        ssh-init
     fi
 
     command ssh "$@"
