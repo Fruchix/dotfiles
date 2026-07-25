@@ -15,19 +15,13 @@ alias gss='git status -s'
 alias gst='git status'
 
 # LOG
-alias glg='git log --graph'
-alias glgg='git log --graph --stat'     # print the changes for each commit
-alias glggg='git log --graph --stat -p' # also print the content of the files that changed
+alias glg='git log --graph --all'
+alias glgg='git log --graph --all --stat'     # print the changes for each commit
+alias glggg='git log --graph --all --stat -p' # also print the content of the files that changed
 
-alias glga='git log --graph --decorate --all'
-alias glgga='git log --graph --decorate --all --stat'
-alias glggga='git log --graph --decorate --all --stat -p'
+alias glo='git log --oneline --decorate --graph --all'
 
-alias glo='git log --oneline --decorate --graph'
-alias gloa='git log --oneline --decorate --graph --all'
-
-alias glol='git log --graph --pretty='\''%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'\'' --abbrev-commit'
-alias glola='git log --graph --pretty='\''%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'\'' --abbrev-commit --all'
+alias glol='git log --graph --all --pretty='\''%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'\'' --abbrev-commit'
 
 # DIFF
 alias gd='git diff'
